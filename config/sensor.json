@@ -1,0 +1,24 @@
+{
+   "_comment":"Json Config file for reading sensors data on UdooNeo Full",
+   "version":1,
+   "board":"Udoo Neo Full",
+   "board_id":1,
+   "output_dir":"output",
+   "sensor":[
+        {
+            "type":"Temperature",
+            "id":1,
+            "fs_path":"/sensors/barometer",
+            "files":[
+                {
+                  "data_file":"in_temp_scale"
+                },
+                {
+                  "data_file":"in_temp_raw"
+                }
+            ],
+           "dump_file":"temp.log",
+           "sleep":10
+         }
+    ]
+}

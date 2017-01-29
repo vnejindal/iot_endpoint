@@ -1,0 +1,7 @@
+{
+   "_comment":"It will contain the platform details where this is working",
+   "os":"windows",
+   "python_ver":"2.7",
+   "mesagging":"mqtt",
+   "role":"endpoint"
+}

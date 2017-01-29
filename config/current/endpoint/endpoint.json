@@ -1,0 +1,6 @@
+{
+   "_comment":"It will contain the endpoint related config",
+   "broker_ip":"192.168.88.100",
+   "broker_port":1883,
+   "broker_keepalive":60
+}
