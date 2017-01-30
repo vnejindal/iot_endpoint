@@ -19,7 +19,7 @@ global working_dir
 global endpoint_config
 global device_dir
 ### vne:: tbd
-platform_config = '\\'.join(['..', 'config', 'current', 'common', 'platform.json'])
+platform_config = '/'.join(['..', 'config', 'current', 'common', 'platform.json'])
 
 ### COMMON GLOBAL VARIABLES AND CONSTRUCTS ###
 config_ext = '.json'

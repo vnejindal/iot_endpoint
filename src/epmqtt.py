@@ -17,7 +17,6 @@ def on_connect(client, userdata, flags, rc):
     # reconnect then subscriptions will be renewed.
     #vne::tbd::later    client.subscribe("$SYS/#")
     subscribe.subscribe_control_topic(client)
-    dpublish.read_device_data('temperature', '1', client)
 
 
 # The callback for when a PUBLISH message is received from the server.
@@ -48,4 +47,6 @@ def device_client_start(type, id):
     #vne::tbd:: failure handling or how to make it blocking with time limit
     print 'connection to broker successful'  
     
-    client.loop_forever()
+    #client.loop_forever()
+    client.loop_start()
+    dpublish.read_device_data('temperature', '1', client)

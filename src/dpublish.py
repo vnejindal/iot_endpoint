@@ -4,6 +4,7 @@
 """
 import os
 import time
+import json 
 #import sys
 #sys.path.append('../pylib/paho.mqtt.python/src/paho/mqtt')
 
@@ -33,12 +34,17 @@ def publish_temperature_data(type, id, client, device_config):
         line2 = infile2.read()
         infile1.close()
         infile2.close()
-        fline = ','.join([time.asctime(time.localtime(time.time())), line1.strip(),line2.strip()])
-        print 'vne', fline
-       
+    
+        temp_data = {}
+        temp_data['timestamp'] = time.asctime(time.localtime(time.time()))
+        temp_data['in_temp_scale'] = line1.strip()
+        temp_data['in_temp_raw'] = line2.strip()
+        data_string = json.dumps(temp_data)
+        #print 'data_string : ', data_string 
+        
         topic = device.get_device_topic(type, id)
         #publish the data
-        infot = client.publish(topic ,fline, qos=0)
+        infot = client.publish(topic, data_string, qos=0)
         time.sleep(sleep_time)
 
     
