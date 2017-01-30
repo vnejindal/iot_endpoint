@@ -13,22 +13,6 @@ import common
 import device
 #from paho.mqtt import client
 
-# The callback for when the client receives a CONNACK response from the server.
-def on_connect(client, userdata, flags, rc):
-    print("Connected with result code "+str(rc))
-
-    # Subscribing in on_connect() means that if we lose the connection and
-    # reconnect then subscriptions will be renewed.
-#vne::tbd    client.subscribe("$SYS/#")
-
-# The callback for when a PUBLISH message is received from the server.
-def on_message(client, userdata, msg):
-    print("vne:: "+msg.topic+" "+str(msg.payload))
-
-def on_publish(client, userdata, mid):
-    print("mid: "+str(mid))
-    pass
-
 
 def get_endpoint_config():
     return config.read_endpoint_config()
@@ -70,28 +54,4 @@ def read_device_data(type, id, client):
     if common.equals_ignore_case(device_config['sensor']['type'], 'temperature') :
         publish_temperature_data(type, id, client, device_config)
 
-def device_client_start(type, id):
-    
-    ep_config = get_endpoint_config()
-    srv_ip = ep_config["broker_ip"]
-    srv_port = ep_config["broker_port"]
-    srv_keepalive = ep_config["broker_keepalive"]
-    
-    print 'connecting to broker:', srv_ip,':', srv_port, ' ', srv_keepalive
-    
-    client = mqtt.Client()
-    client.on_connect = on_connect
-    client.on_message = on_message
-    client.on_publish = on_publish
-    client.connect(srv_ip, srv_port, srv_keepalive)
-    #vne::tbd:: failure handling or how to make it blocking with time limit
-    print 'connection to broker successful'  
-    
-    read_device_data(type, id, client)
-    
-#    print("tuple")
-#    infot = client.publish("/ep/1/thermometer" ,"{\"scale\": 0.0625, \"value\":303}", qos=0)
-#    print(rc, mid)
-#    infot = client.publish("class", "bar", qos=2)
-#    infot.wait_for_publish()
-    client.loop_forever()
+

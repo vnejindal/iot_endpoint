@@ -5,16 +5,13 @@
 """
 from time import sleep
 
-"""
--- read configuration 
--- 
-"""
 
 import os
 
 import common
 import config 
-import dpublish
+import epmqtt
+
 
 def main():
     print "Starting read_n_dump..."
@@ -22,8 +19,8 @@ def main():
     
     device_id= str(1)
     device_type='temperature'
-    dpublish.device_client_start(device_type, device_id)
-    sleep(10)
+    epmqtt.device_client_start(device_type, device_id)
+    sleep(10)  ##vne::tbd
 
 if __name__ == '__main__':
     main()

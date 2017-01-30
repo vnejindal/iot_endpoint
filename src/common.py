@@ -44,16 +44,26 @@ device_type = 'temperature'
 ### COMMON METHODS ####
 
 
+def get_node_id():
+    global node_id
+    return node_id
+
+def get_platform_delim():
+    global platform_delim 
+    return platform_delim 
+
 def initialize():
     """
     This function should be called from main for initializing common modules
     """
-    config.initialize()
+    config.early_init()
     global platform_delim
     platform_delim = config.get_platorm_delim()
-    print 'changing platform delimiter to ', platform_delim
+    print 'changing epplatform delimiter to ', platform_delim
     common_init()
 
+    config.late_init()
+    
 def common_init():
     global working_dir
     global endpoint_config
@@ -67,15 +77,8 @@ def common_init():
                 node_type + \
                 '/device'
     platform_config = platform_delim.join([working_dir, common_dir, platform_config_file])
-    
     generate_node_identifier()
-    
-    
 
-def get_node_id():
-    global node_id
-    return node_id
-  
 def generate_node_identifier():
     """
     generates node unique identifier
