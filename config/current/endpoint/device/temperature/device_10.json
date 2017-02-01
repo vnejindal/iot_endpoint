@@ -12,8 +12,7 @@
             }
         ],
         "fs_path":"/sensors/barometer",
-        "interface":"i2c",
-        "type":"Temperature"
+        "interface":"i2c"
     },
     "sleep":5,
     "state":"enabled",

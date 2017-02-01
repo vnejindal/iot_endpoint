@@ -95,7 +95,8 @@ def generate_node_identifier():
     """
     ip_tuple = get_ip_address()
     global node_id 
-    node_id = '_'.join([ip_tuple[0].replace('.','_'), str(ip_tuple[1])])
+    #node_id = '_'.join([ip_tuple[0].replace('.','_'), str(ip_tuple[1])])
+    node_id = '_'.join([ip_tuple[0].replace('.','_')])
     print "Node Identifier", node_id
        
 def get_ip_address():
@@ -115,6 +116,12 @@ def equal(a,b):
 def equals_ignore_case(a,b):
     return a.upper() == b.upper()
 
+def decode_mqtt_payload(msg_payload):
+    """
+    returns the json payload format of raw data 
+    """
+    json_data = msg_payload.decode('utf-8')
+    return json.loads(json_data)
 
 def create_json_file(json_data, file_name):
     """

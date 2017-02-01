@@ -14,5 +14,9 @@
                 }
             ]
          },
-         "unit":"celcius"         
+         "default_unit":"celcius",
+         "unit":"celcius",
+         "state":"disabled",
+         "status":"registered",
+         "sleep":10              
 }

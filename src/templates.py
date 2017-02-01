@@ -13,6 +13,12 @@ Global json templates datastructures
 """
 template_temp = None  #temerature template
 
+"""
+template_board_fn = {
+                        'read_udo_template': _read_endpoint_template 
+                    }
+"""
+
 def initialize():
     """
     Entry point function - must be called first 
@@ -21,6 +27,16 @@ def initialize():
     templates_dir = common.get_platform_delim().join(['..', 'config', 'templates'])
     global template_temp
     template_temp = _read_endpoint_template()
+    """
+    if board is 'udo'
+        read_temperature_template
+        read_lighting_template 
+        read_hvac_template
+    if board is 'raspberrypi'
+        read_temperature_template
+        read_lighting_template
+    
+    """
 
 def get_temperature_template():
     return template_temp
