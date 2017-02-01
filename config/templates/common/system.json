@@ -1,0 +1,23 @@
+{
+   "_comment":"It will contain system level information about solution",
+   "board_types": [
+   		"udo",
+   		"rasppi3"
+   		],
+   	"device_actions" : [
+   		"add",
+   		"delete",
+   		"activate",
+   		"deactivate",
+   		"set",
+   		"get"
+   		],
+   	"device_types":[
+   		{
+   			"temperature":
+   			{
+   				"parameters":
+   			}
+   		}
+   		]
+}

@@ -55,7 +55,7 @@ def read_endpoint_config():
     endpoint_config = json.loads(ep_config)
     return endpoint_config
 
-##### DEVICE CONFIGUURATION METHODS ############
+##### DEVICE CONFIGURATION METHODS ############
     
 def log_device_config():
     print read_device_config()
@@ -67,7 +67,7 @@ def read_device_config(type, id):
     #vne::tbd:: change to abs path
     #dfile = 'device_' + id + common.config_ext
     dfile = ''.join(['device_', id, common.config_ext])
-    device_file = common.get_platform_delim().join(['..', common.device_dir, type, dfile])
+    device_file = common.get_platform_delim().join([common.device_config_dir, type, dfile])
  
     json_config = open(device_file).read()
     #tbd:: exception handling
@@ -85,12 +85,23 @@ def get_messaging_protocol():
 def get_subscribe_topic():
     return platform_config['messaging']['subtopic']
 
+def get_platform_role():
+    return platform_config['role']
+
+def get_platform_boardtype():
+    return platform_config['board']
+
+def validate_platform_config():
+    #tbd::vne:: 
+    pass 
+
 def read_platform_config():
     print 'reading epplatform configuration'
     plat_json = open(common.get_platfrom_configfile()).read()
     ##vne:: tbd:: error handling 
     global platform_config 
     platform_config = json.loads(plat_json)
+    validate_platform_config()
     return platform_config
 
 def get_platorm_delim():

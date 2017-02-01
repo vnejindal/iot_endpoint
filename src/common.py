@@ -5,8 +5,11 @@ methods
 """
 import os
 import socket
+import json
 
 import config
+import templates
+import device
 
 #File path delimiters based on Windows or Linux
 """
@@ -17,7 +20,6 @@ global platform_delim
 
 global working_dir
 global endpoint_config
-global device_dir
 ### vne:: tbd
 platform_config = '/'.join(['..', 'config', 'current', 'common', 'platform.json'])
 
@@ -29,6 +31,8 @@ Configuration directories
 """
 config_dir = 'config'
 common_dir = 'common'
+device_config_dir = None
+
 
 """
 Configuration Files 
@@ -52,6 +56,10 @@ def get_platform_delim():
     global platform_delim 
     return platform_delim 
 
+def get_device_config_dir():
+    global device_config_dir
+    return device_config_dir
+
 def initialize():
     """
     This function should be called from main for initializing common modules
@@ -63,21 +71,22 @@ def initialize():
     common_init()
 
     config.late_init()
+    templates.initialize()
+    device.initialize()
+    
     
 def common_init():
     global working_dir
     global endpoint_config
-    global device_dir
+    global device_config_dir
     global platform_config 
     
     working_dir = platform_delim.join([config_dir, 'current'])
     endpoint_config = platform_delim.join([working_dir, node_type, endpoint_config_file])
-    device_dir = working_dir + \
-                platform_delim + \
-                node_type + \
-                '/device'
+    device_config_dir = platform_delim.join(['..',working_dir, node_type, 'device'])
     platform_config = platform_delim.join([working_dir, common_dir, platform_config_file])
     generate_node_identifier()
+    
 
 def generate_node_identifier():
     """
@@ -105,3 +114,14 @@ def equal(a,b):
                 
 def equals_ignore_case(a,b):
     return a.upper() == b.upper()
+
+
+def create_json_file(json_data, file_name):
+    """
+    dumps json format data in file
+    json_data: json data to be dumped into file_name
+    file_name: name of file with its full path
+    """
+    with open(file_name, 'w') as outfile:
+        json.dump(json_data, outfile, sort_keys = True, indent = 4, ensure_ascii=False, separators=(',', ':'))
+

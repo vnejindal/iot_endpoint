@@ -1,0 +1,19 @@
+{
+    "_comment":"Template file for i2c temperature sensor on Udoo Neo Full",
+    "id":1,
+    "new_data":"new_data1234",
+    "sensor":{
+        "files":[
+            {
+                "data_file":"in_temp_scale"
+            },
+            {
+                "data_file":"in_temp_raw"
+            }
+        ],
+        "fs_path":"/sensors/barometer",
+        "interface":"i2c",
+        "type":"Temperature",
+        "unit":"celcius"
+    }
+}

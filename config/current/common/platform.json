@@ -3,6 +3,7 @@
    "os":"windows",
    "python_ver":"2.7",
    "role":"endpoint",
+   "board":"udo",
    "messaging":
    {
        "protocol":"mqtt",
