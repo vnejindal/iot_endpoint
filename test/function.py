@@ -15,10 +15,10 @@ def func_name_B(id):
 fnameA = initial_name + endname[0]
 fnameB = initial_name + endname[1]
 
-fname_dict = {
-        fnameA : func_name_A,
-        fnameB : func_name_B
-        }
+fname_dict = {}
+
+fname_dict[fnameA] = func_name_A
+fname_dict[fnameB] = func_name_B
 
 fname_dict[fnameA]()
 fname_dict[fnameB](10)

@@ -3,13 +3,16 @@ functionality of subscribing to topics on MQTT broker
 """
 
 import common
-import endpoint
+import epmqtt
 import paho.mqtt.client as mqtt
 
-def subscribe_control_topic(client):
-    topic = '/'.join([common.get_node_id(), endpoint.get_subscribe_topic(), '#'])
+
+def subscribe_mqtt_topics(client):
+    sub_topics = epmqtt.mqtt_profile['sub']
     
-    client.subscribe(topic)
-    print 'Subscribed to topic: ', topic
-    
+    for key in sub_topics.keys():
+        print 'subscribing to ', key, ":", sub_topics[key]
+        client.subscribe(sub_topics[key])    
+
+
     

@@ -19,7 +19,7 @@ global node_id
 global platform_delim
 
 global working_dir
-global endpoint_config
+#global endpoint_config
 ### vne:: tbd
 platform_config = '/'.join(['..', 'config', 'current', 'common', 'platform.json'])
 
@@ -38,7 +38,7 @@ device_config_dir = None
 Configuration Files 
 """
 platform_config_file = 'platform' + config_ext
-endpoint_config_file = 'endpoint' + config_ext
+#endpoint_config_file = 'endpoint' + config_ext
 
 """
 Node specific variables 
@@ -70,19 +70,19 @@ def initialize():
     print 'changing epplatform delimiter to ', platform_delim
     common_init()
 
-    config.late_init()
     templates.initialize()
+    config.late_init()
     device.initialize()
     
     
 def common_init():
     global working_dir
-    global endpoint_config
+#    global endpoint_config
     global device_config_dir
     global platform_config 
     
     working_dir = platform_delim.join([config_dir, 'current'])
-    endpoint_config = platform_delim.join([working_dir, node_type, endpoint_config_file])
+#    endpoint_config = platform_delim.join([working_dir, node_type, endpoint_config_file])
     device_config_dir = platform_delim.join(['..',working_dir, node_type, 'device'])
     platform_config = platform_delim.join([working_dir, common_dir, platform_config_file])
     generate_node_identifier()
@@ -98,7 +98,13 @@ def generate_node_identifier():
     #node_id = '_'.join([ip_tuple[0].replace('.','_'), str(ip_tuple[1])])
     node_id = '_'.join([ip_tuple[0].replace('.','_')])
     print "Node Identifier", node_id
-       
+
+def generate_gateway_identifier(gw_ip_addr):
+    """
+    generates gateway identifier 
+    """
+    return '_'.join([gw_ip_addr.replace('.','_')])
+
 def get_ip_address():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     s.connect(("8.8.8.8", 80))

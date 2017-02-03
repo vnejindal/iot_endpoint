@@ -14,9 +14,17 @@
                 }
             ]
          },
-         "default_unit":"celcius",
-         "unit":"celcius",
-         "state":"disabled",
-         "status":"registered",
-         "sleep":10              
+    "default_unit":"celcius",
+    "unit":"celcius",
+    "state":"disabled",
+    "status":"none",
+    "sleep":10,
+    "trigger":
+    	{
+    		"state":"off",
+    		"high_value":78,
+    		"low_value":23,
+    		"unit":"celcius,
+    		"trigger_action":"alarm"
+        }
 }

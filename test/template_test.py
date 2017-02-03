@@ -3,6 +3,7 @@ Test file for reading templates
 """
 import os
 import json
+import device
 
 
 def read_template(board_type, board, device_type):
@@ -19,6 +20,22 @@ def read_template(board_type, board, device_type):
     print device_data
     create_json_file(device_data)
     
+def read_system_template():
+    """
+    reads system template config file 
+    """
+    fname = '.'.join(['system', 'json'])
+    fpath = '\\'.join(['..','config','templates', 'common', fname])
+    print fpath
+    
+    json_config = open(fpath).read()
+    #tbd:: exception handling
+    device_data = json.loads(json_config)
+    #print device_data
+    #create_json_file(device_data)
+    print device_data['board_types']['udo']
+    
+    
 def create_json_file(json_data):
     """
     dumps json format data in file
@@ -30,4 +47,5 @@ def create_json_file(json_data):
     with open('data.txt', 'w') as outfile:
         json.dump(json_data, outfile, sort_keys = True, indent = 4, ensure_ascii=False, separators=(',', ':'))
     
-read_template('endpoint', 'udo', 'temperature')
+#read_template('endpoint', 'udo', 'temperature')
+read_system_template()

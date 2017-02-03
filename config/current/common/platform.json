@@ -3,10 +3,15 @@
    "os":"windows",
    "python_ver":"2.7",
    "role":"endpoint",
-   "board":"udo",
+   "board_type":"udo",
    "messaging":
    {
        "protocol":"mqtt",
-       "subtopic":"control"
+       "mqtt": {
+       				"subtopic":"control",
+       				"broker_ip":"192.168.88.100",
+   					"broker_port":1883,
+   					"broker_keepalive":60
+   				}       
    }
 }

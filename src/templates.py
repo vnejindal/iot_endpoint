@@ -11,6 +11,8 @@ templates_dir = ''
 """
 Global json templates datastructures
 """
+system_profile = None
+
 template_temp = None  #temerature template
 
 """
@@ -23,10 +25,13 @@ def initialize():
     """
     Entry point function - must be called first 
     """
+    read_system_profile()
+    
     global templates_dir
     templates_dir = common.get_platform_delim().join(['..', 'config', 'templates'])
     global template_temp
     template_temp = _read_endpoint_template()
+    
     """
     if board is 'udo'
         read_temperature_template
@@ -71,6 +76,20 @@ def read_template(board_type, board, device_type):
     #tbd:: exception handling
     device_data = json.loads(json_config)
     return device_data
+
+def read_system_profile():
+    """
+    Reads the top level system template file 
+    """
+    fname = '.'.join(['system', 'json'])
+    fpath = '\\'.join(['..','config','templates', 'common', fname])
+    print fpath
+    
+    json_config = open(fpath).read()
+    #tbd:: exception handling
+    global system_profile
+    system_profile = json.loads(json_config)
+    
 
 
     
