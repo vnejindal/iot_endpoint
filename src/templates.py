@@ -82,7 +82,7 @@ def read_system_profile():
     Reads the top level system template file 
     """
     fname = '.'.join(['system', 'json'])
-    fpath = '\\'.join(['..','config','templates', 'common', fname])
+    fpath = common.get_platform_delim().join(['..','config','templates', 'common', fname])
     print fpath
     
     json_config = open(fpath).read()

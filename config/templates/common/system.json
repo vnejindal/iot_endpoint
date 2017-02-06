@@ -39,5 +39,6 @@
    		},
    	"response_codes": ["success", "fail"],
    	"device_status" : [ "none", "registered", "unregistered" ],
-   	"device_states": ["enabled", "disabled"]
+   	"device_states": ["enabled", "disabled"],
+   	"trigger_actions": ["none", "log", "alarm"]
 }

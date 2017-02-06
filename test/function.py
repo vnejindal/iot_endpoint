@@ -17,8 +17,22 @@ fnameB = initial_name + endname[1]
 
 fname_dict = {}
 
+fname_dict[fnameA] = eval(fnameA)
+fname_dict[fnameB] = eval(fnameB)
+"""
 fname_dict[fnameA] = func_name_A
 fname_dict[fnameB] = func_name_B
+"""
 
-fname_dict[fnameA]()
-fname_dict[fnameB](10)
+def entry():
+    parsed_json = {}
+    parsed_json['id'] = 10
+    parsed_json['type'] = 'temperature'
+    
+    #print type(parsed_json)
+    print fname_dict
+    
+    fname_dict[fnameA]()
+    fname_dict[fnameB](parsed_json)
+
+entry()

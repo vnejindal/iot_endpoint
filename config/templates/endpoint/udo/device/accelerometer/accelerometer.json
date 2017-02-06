@@ -1,0 +1,30 @@
+{
+   "_comment":"Template file for onboard accelerometer on Udoo Neo Full",
+   "sensor":
+        {
+            "type":"accelerometer",
+            "interface":"i2c",
+            "fs_path":"/sensors/accelerometer",
+            "files":[
+                {
+                  "control_file":"enable"
+                },
+                {
+                  "data_file":"data"
+                }
+            ]
+         },
+    "default_unit":"tbd",
+    "unit":"tbd",
+    "state":"disabled",
+    "status":"none",
+    "sleep":10,
+    "trigger":
+    	{
+    		"state":"off",
+    		"high_value":"tbd",
+    		"low_value":"tbd",
+    		"unit":"tbd",
+    		"trigger_action":"alarm"
+        }
+}

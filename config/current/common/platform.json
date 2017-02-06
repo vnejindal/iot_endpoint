@@ -11,7 +11,8 @@
        				"subtopic":"control",
        				"broker_ip":"192.168.88.100",
    					"broker_port":1883,
-   					"broker_keepalive":60
+   					"broker_keepalive":60,
+   					"transport":"tcp"
    				}       
    }
 }

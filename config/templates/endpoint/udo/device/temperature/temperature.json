@@ -24,7 +24,7 @@
     		"state":"off",
     		"high_value":78,
     		"low_value":23,
-    		"unit":"celcius,
+    		"unit":"celcius",
     		"trigger_action":"alarm"
         }
 }

@@ -11,11 +11,17 @@ import endpoint
 import subscribe
 import dpublish
 import device 
+import common
 
 mqtt_profile = {}
 
 def get_mqtt_client():
     return mqtt_profile['client']
+
+def log_mqtt_profile():
+    print 'MQTT profile: '
+    print mqtt_profile
+    
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
     print("Connected with result code "+str(rc))
@@ -73,10 +79,14 @@ def initialize():
     mqtt_profile['pub'] = {}
     mqtt_profile['sub'] = {}
     
-    if role is 'endpoint':
+    print 'vne:: role is ', role
+    if common.equals_ignore_case(role, 'endpoint'):
+        print 'setting up endpint topics '
         mqtt_profile['pub']['gw_topic'] = '/'.join([config.get_platform_gw_id(), 
                                            config.get_platform_node_id()])
         mqtt_profile['sub']['endpoint_topic'] = '/'.join([config.get_platform_gw_id(), 
                                                  config.get_platform_node_id(), 
                                                  endpoint.get_subscribe_topic(), '#'])
+    
+    log_mqtt_profile()
     

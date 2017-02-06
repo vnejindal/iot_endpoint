@@ -7,7 +7,6 @@ import json
 
 import common
 import templates 
-from common import platform_config
 import epmqtt
 
 
@@ -120,7 +119,12 @@ def get_platorm_delim():
         return '\\'
     else:
         return '/'
-
+def log_config_module_data():
+    print 'Platform Config: '
+    print platform_config 
+    print 'System Config: '
+    print system_config
+    
 def early_init():
     read_platform_config()
 
@@ -128,8 +132,11 @@ def late_init():
     """
     This function will read and initialize configuration Variables
     """
+    global system_config
     system_config = templates.system_profile
     platform_config['gw_id'] = common.generate_gateway_identifier(get_endpoint_broker_ip())
     platform_config['node_id'] = common.get_node_id()
+    log_config_module_data()
+    #log_platform_config()
     epmqtt.initialize()
     pass

@@ -60,20 +60,7 @@ def get_device_config_dir():
     global device_config_dir
     return device_config_dir
 
-def initialize():
-    """
-    This function should be called from main for initializing common modules
-    """
-    config.early_init()
-    global platform_delim
-    platform_delim = config.get_platorm_delim()
-    print 'changing epplatform delimiter to ', platform_delim
-    common_init()
 
-    templates.initialize()
-    config.late_init()
-    device.initialize()
-    
     
 def common_init():
     global working_dir
@@ -84,7 +71,7 @@ def common_init():
     working_dir = platform_delim.join([config_dir, 'current'])
 #    endpoint_config = platform_delim.join([working_dir, node_type, endpoint_config_file])
     device_config_dir = platform_delim.join(['..',working_dir, node_type, 'device'])
-    platform_config = platform_delim.join([working_dir, common_dir, platform_config_file])
+    platform_config = platform_delim.join(['..', working_dir, common_dir, platform_config_file])
     generate_node_identifier()
     
 
@@ -138,3 +125,17 @@ def create_json_file(json_data, file_name):
     with open(file_name, 'w') as outfile:
         json.dump(json_data, outfile, sort_keys = True, indent = 4, ensure_ascii=False, separators=(',', ':'))
 
+def initialize():
+    """
+    This function should be called from main for initializing common modules
+    """
+    config.early_init()
+    global platform_delim
+    platform_delim = config.get_platorm_delim()
+    print 'changing epplatform delimiter to ', platform_delim
+    common_init()
+
+    templates.initialize()
+    config.late_init()
+    device.initialize()
+    
