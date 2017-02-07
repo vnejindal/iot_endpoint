@@ -1,0 +1,55 @@
+{
+   "_comment":"Scenario File for temperature device type",
+   "broker_ip":"127.0.0.1",
+   "broker_port":1883,
+   "gateway_id":"192.168.1.100",
+   "endpoint_id":"192.168.1.101",
+   "device_id":10,
+   "device_type":"temperature",
+   "protocol":"mqtt",
+   "request_id_start":50,
+   "actions": 
+   [    
+   	  {
+   	  	"_comment":"Add the device",
+   	    "action":"add",
+   	    "wait":5
+   	  },
+   	  {
+   	    "_comment":"Enable the device",
+   	  	"action":"set",
+   	  	"state":"enabled",
+   	    "wait":55
+   	  },
+   	  {
+   	  	"_comment":"change the frequency",
+   	  	"action":"set",
+   	  	"frequency":2,
+   	    "wait":60
+   	  },
+   	  {
+   	  	"_comment":"change the unit",
+   	  	"action":"set",
+   	  	"unit":"fahernite",
+   	    "wait":60
+   	  },
+   	  {
+   	  	"_comment":"Set the trigger for alarm",
+   	  	"action":"set",
+   	  	"trigger":
+    	{
+    		"state":"off",
+    		"high_value":78,
+    		"low_value":23,
+    		"unit":"celcius",
+    		"trigger_action":"alarm"
+        },
+   	  	"wait":300
+   	  },
+   	  {
+   	  	"_comment":"delete the device",
+   	  	"action":"delete",
+   	  	"wait":0   	  	
+   	  }
+   ]
+}
