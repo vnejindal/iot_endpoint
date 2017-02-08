@@ -2,6 +2,7 @@
 Functionality of templates reading and filling out data structures
 """
 import os
+import sys
 import json
 
 import common
@@ -72,6 +73,10 @@ def read_template(board_type, board, device_type):
     fpath = common.get_platform_delim().join([templates_dir, board_type, board, 'device', device_type, fname])
     print fpath
     
+    if not os.path.exists(fpath):
+        print 'Config file does not exist: ', fpath
+        sys.exit('Config file does not exist')
+        
     json_config = open(fpath).read()
     #tbd:: exception handling
     device_data = json.loads(json_config)
@@ -84,6 +89,10 @@ def read_system_profile():
     fname = '.'.join(['system', 'json'])
     fpath = common.get_platform_delim().join(['..','config','templates', 'common', fname])
     print fpath
+    
+    if not os.path.exists(fpath):
+        print 'Config file does not exist: ', fpath
+        sys.exit('Config file does not exist')
     
     json_config = open(fpath).read()
     #tbd:: exception handling

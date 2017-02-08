@@ -5,6 +5,7 @@
 import os
 import time
 import json 
+import sys 
 #import sys
 #sys.path.append('../pylib/paho.mqtt.python/src/paho/mqtt')
 
@@ -13,34 +14,59 @@ import config
 import common 
 import device
 import epmqtt
+from imageop import scale
 #from paho.mqtt import client
 
 
 def get_endpoint_config():
     return config.read_endpoint_config()
 
-def publish_temperature_data(type, id, client, device_config):
+def publish_temperature_data(type, id, client, device_config = None):
     """
     Reads the device type temperature
     """
+    if device_config is None: 
+        device_config = device.get_device_profile(type, id)
+
     fs_path = device_config['sensor']['fs_path'] + '/'
     file1 = fs_path + device_config['sensor']['files'][0]['data_file'] 
     file2 = fs_path + device_config['sensor']['files'][1]['data_file']
-    sleep_time = device_config['sleep'] 
-
+    
+    sleep_time = 1
     while True:
-        if common.equals_ignore_case(device_config['state'], 'enabled'):
+        if device.is_device_enabled(type, id):
+            sleep_time = device_config['frequency'] 
+            
+            if not os.path.exists(file1) or not os.path.exists(file2):
+                print 'Device unavailable: ', type, id
+                device.device_disable({'type': type, 'id':id })
+                continue
+              
             infile1 = open(file1, "r")
             infile2 = open(file2, "r")
-            line1 = infile1.read()
-            line2 = infile2.read()
+            tscale = infile1.read()
+            traw = infile2.read()
             infile1.close()
             infile2.close()
     
+            unit = device_config['unit']
+            def_unit = device_config['default_unit']
+            
+            if unit == def_unit: 
+                in_temp = float(tscale) * float(traw)
+            else:
+                """convert it to fahernite and report """
+                in_temp = 9.0/5.0 * float(tscale)*float(traw) + 32
+                
             temp_data = {}
             temp_data['timestamp'] = time.asctime(time.localtime(time.time()))
-            temp_data['in_temp_scale'] = line1.strip()
-            temp_data['in_temp_raw'] = line2.strip()
+            temp_data['temperature'] = str(in_temp)
+            temp_data['unit'] = unit
+            print 'publishing data: ', temp_data
+            """
+            temp_data['in_temp_scale'] = tscale.strip()
+            temp_data['in_temp_raw'] = traw.strip()
+            """
             data_string = json.dumps(temp_data)
             #print 'data_string : ', data_string 
         
@@ -48,7 +74,7 @@ def publish_temperature_data(type, id, client, device_config):
             #publish the data
             infot = client.publish(topic, data_string, qos=0)
         time.sleep(sleep_time)
-        print 'sleeping...'
+        #print 'sleeping...', sleep_time
 
     
 def read_device_data(type, id, client = None):
@@ -63,7 +89,8 @@ def read_device_data(type, id, client = None):
         client = epmqtt.get_mqtt_client()
         
     if common.equals_ignore_case(device_config['sensor']['type'], 'temperature') :
-        publish_temperature_data(type, id, client, device_config)
+        publish_temperature_data(type, id, client)
+        #publish_temperature_data(type, id, client, device_config)
 
 def publish_response(topic, payload, client = None):
     """

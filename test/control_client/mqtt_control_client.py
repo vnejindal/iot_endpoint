@@ -17,8 +17,19 @@ def on_message(client, userdata, msg):
     print("vne:: "+msg.topic+" "+str(msg.payload))
     
     #if msg.payload is 'ok'
-    print 'processing next action '
-    process_actions()
+    print 'processing next action'
+    """
+    if topic is response
+    """
+    print scenario['response']['topic']
+    if msg.topic.startswith('response'):
+    #if msg.topic.startswith('response') and scenario['response']['topic'].find(msg.topic) != -1:
+        if process_sub_msg(msg):
+            process_actions()
+        else:
+            print 'Invalid Payload'
+    else:
+        print 'Invalid message received'
     
         
 def on_publish(client, userdata, mid):
@@ -70,7 +81,18 @@ def publish_data(data_string):
     print 'published: ', rc, mid
     
 def subscribe_topic(topic):
+    print 'subscribing to: ', topic
     scenario['client'].subscribe(topic)
+
+def process_sub_msg(msg):
+    json_data = msg.payload.decode('utf-8')
+    payload = json.loads(json_data)
+    print 'Subscribe Response: ', payload
+    if payload['status'] == 'success':
+        return True
+    else:
+        return False
+    
     
 def process_actions():
     
@@ -92,16 +114,22 @@ def process_next_action(action):
     print 'processing action: ', action
     
     global scenario 
-    
     request_common = {}
+    gw_id = ''
+    ep_id = ''
     
-    if scenario['gateway_id'] != 'none':
-        scenario['topic'] = '/'.join([scenario['gateway_id'], 
-                                           scenario['endpoint_id'], 
-                                           'device', 
-                                           scenario['device_type'],
-                                           str(scenario['device_id'])]
-                                           )
+    if scenario['gateway_id'] != '':
+        gw_id = generate_node_id(scenario['gateway_id'])
+    if scenario['endpoint_id'] != '':
+        ep_id = generate_node_id(scenario['endpoint_id'])
+    
+    scenario['topic'] = '/'.join([gw_id, 
+                                  ep_id, 
+                                  'control',
+                                  'device', 
+                                   scenario['device_type'],
+                                   str(scenario['device_id'])]
+                                 )
     
     request_common['topic'] = scenario['topic']
     
@@ -113,8 +141,8 @@ def process_next_action(action):
     
     publish_data(request)
     scenario['response'] = {}
-    scenario['response']['topic'] = '/'.join(['response', request['topic']])
+    scenario['response']['topic'] = '/'.join(['response', request['topic'], '#'])
     scenario['response']['wait'] = 1
     subscribe_topic(scenario['response']['topic'])
         
-start_scenario('scenario.json')
+start_scenario('scenario2.json')

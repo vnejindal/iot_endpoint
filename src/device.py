@@ -66,7 +66,8 @@ def initialize():
     
 
 def get_device_topic(type, id):
-    return '/'.join([common.get_node_id(), 'device', type, id])
+    return '/'.join(['publish', devices_dict[type][id]['topic']])
+    #return '/'.join([common.get_node_id(), 'device', type, id])
 
 
 def device_add(device_data):
@@ -90,15 +91,17 @@ def device_add(device_data):
     device_type = device_data['type']
     
     #device_type['status'] = 'registered'
-       
-    publish_thread = Thread(target=device_publish_thread, args=(device_type, device_id,))
-    publish_thread.start()
+
     global devices_dict
     devices_dict[device_type][device_id] = device_template
     set_device_status(device_type, device_id, device_status[1])
     
     device_file = common.get_platform_delim().join([common.get_device_config_dir(), device_type, fname])
+    device_template['device_file'] = device_file
     common.create_json_file(device_template, device_file)
+           
+    publish_thread = Thread(target=device_publish_thread, args=(device_type, device_id,))
+    publish_thread.start()
     print 'device added successfully', device_type, device_id
     return retval
     
@@ -112,6 +115,9 @@ def device_delete(device_data):
     global devices_dict
     devices_dict[device_data['type']].pop(device_data['id'], None)
     print 'device removed successfully', device_data['type'], device_data['id']
+    """
+    vne::tbd:: remove the json file as well
+    """
     return retval
 
 
@@ -133,6 +139,8 @@ def device_set(device_data):
     retval = 0
     global devices_dict
     devices_dict[device_data['type']][device_data['id']].update(device_data)
+    common.create_json_file(devices_dict[device_data['type']][device_data['id']], 
+                            devices_dict[device_data['type']][device_data['id']]['device_file'])
     return retval
     
 
@@ -145,6 +153,9 @@ def device_enable(device_data):
     retval = 0
     set_device_state(device_data['type'], device_data['id'], device_states[0])
     print 'device enabled', device_data['type'], device_data['id']
+    common.create_json_file(devices_dict[device_data['type']][device_data['id']], 
+                            devices_dict[device_data['type']][device_data['id']]['device_file'])
+
     #vne::gbd:: dump this into config file as well
     return retval
     
@@ -156,6 +167,9 @@ def device_disable(device_data):
     retval = 0
     set_device_state(device_data['type'], device_data['id'], device_states[1])
     #devices_dict[device_data['id']]['state'] = device_states[1]
+    common.create_json_file(devices_dict[device_data['type']][device_data['id']], 
+                            devices_dict[device_data['type']][device_data['id']]['device_file'])
+
     print 'device disabled', device_data['type'], device_data['id']
     #vne::gbd:: dump this into config file as well
     return retval 
@@ -192,13 +206,20 @@ def set_device_state(type, id, state):
     """
     global devices_dict
     devices_dict[type][id]['state'] = state
-      
+
+def is_device_enabled(type, id):
+    return get_device_state(type, id) == 'enabled'
+
+def get_device_profile(type, id):
+    return devices_dict[type][id]
+     
 def process_device_msg(msg_topic, msg_payload):
     """
     processes control message recevied for device 
     msg_topic: topic  
     msg_payload: raw payload
     """
+    retval = 0
     resp_status = resp_codes[0]
     msgtopic = msg_topic.split("/")
     device_type, device_id = msgtopic[-2:]
@@ -212,7 +233,7 @@ def process_device_msg(msg_topic, msg_payload):
     """
     action = parsed_json['action']
     if device_id in devices_dict[device_type]:
-        allowed_actions = device_action_sm[get_device_state(device_type, device_id)]
+        allowed_actions = device_action_sm[get_device_status(device_type, device_id)]
     else:
         allowed_actions = device_action_sm[device_status[0]]
     if action.lower() in allowed_actions:

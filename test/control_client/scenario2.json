@@ -16,7 +16,7 @@
    	    "action":"add"   	    
    	  },
    	  {
-   	    "wait":15,
+   	    "wait":5,
    	    "_comment":"Enable the device",
    	  	"action":"set",
    	  	"state":"enabled"
@@ -36,6 +36,13 @@
    	  },
    	  {
    	  	"wait":60,
+   	  	"_comment":"change the unit",
+   	  	"action":"set",
+   	  	"unit":"celcius",
+   	  	"frequency":3   	    
+   	  },
+   	  {
+   	  	"wait":60,
    	  	"_comment":"Set the trigger for alarm",
    	  	"action":"set",
    	  	"trigger":
@@ -46,11 +53,6 @@
     		"unit":"celcius",
     		"trigger_action":"alarm"
         }
-   	  },
-   	  {
-   	  	"wait":300,
-   	  	"_comment":"delete the device",
-   	  	"action":"delete"   	  	
    	  }
    ]
 }

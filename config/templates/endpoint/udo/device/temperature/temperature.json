@@ -18,7 +18,7 @@
     "unit":"celcius",
     "state":"disabled",
     "status":"none",
-    "sleep":10,
+    "frequency":10,
     "trigger":
     	{
     		"state":"off",
