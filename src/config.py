@@ -46,6 +46,9 @@ def log_json_config(json_data):
 
 ##### DEVICE CONFIGUURATION METHODS ############  
 
+def get_mqtt_config():
+    return platform_config['messaging']['mqtt']
+
 def get_endpoint_broker_ip():
     return platform_config['messaging']['mqtt']['broker_ip']
 

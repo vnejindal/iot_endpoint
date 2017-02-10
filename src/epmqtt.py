@@ -3,6 +3,7 @@ contains functionality for MQTT -- entry level for other stuff
 """
 import os
 import json
+import sys
 
 import paho.mqtt.client as mqtt
 
@@ -12,6 +13,15 @@ import subscribe
 import dpublish
 import device 
 import common
+
+mqtt_rc_codes = {
+                    0: 'Connection successful',
+                    1: 'Connection refused - incorrect protocol version',
+                    2: 'Connection refused - invalid client identifier',
+                    3: 'Connection refused - server unavailable',
+                    4: 'Connection refused - bad username or password',
+                    5: 'Connection refused - not authorised'
+                }
 
 mqtt_profile = {}
 
@@ -24,11 +34,22 @@ def log_mqtt_profile():
     
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client, userdata, flags, rc):
-    print("Connected with result code "+str(rc))
+    #print("Connected with result code "+str(rc))
+    
+    if rc == 0:
+        print 'Client connected successfully'
+        subscribe.subscribe_mqtt_topics(client)
+    else:
+        print 'Client connection failed: ', str(rc), mqtt_rc_codes[rc]
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
     #vne::tbd::later    client.subscribe("$SYS/#")
-    subscribe.subscribe_mqtt_topics(client)
+
+def on_disconnect(client, userdata, rc):
+    if rc == 0:
+        print 'Client disconnected successfully'
+    else:
+        print 'Client disconnection issue: ', str(rc)
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client, userdata, msg):
@@ -43,16 +64,36 @@ def device_client_start(type, id):
     """
     Connects with MQTT broker
     """
+    """
+    vne::tbd
     ep_config = endpoint.get_broker_details()
     srv_ip = ep_config[0]
     srv_port = ep_config[1]
     srv_keepalive = ep_config[2]
+    """
+    
+    global mqtt_profile
+    mqtt_profile.update(config.get_mqtt_config())
+    
+    srv_ip = mqtt_profile['broker_ip']
+    srv_port = mqtt_profile['broker_port']
+    srv_keepalive = mqtt_profile['broker_keepalive']
     
     print 'connecting to broker:', srv_ip,':', srv_port, ' ', srv_keepalive
-    mqtt_client = mqtt.Client()
+    
+    mqtt_client = mqtt.Client(config.get_platform_node_id(), 
+                              mqtt_profile['clean_session'],
+                              mqtt_profile['userdata'])
     mqtt_client.on_connect = on_connect
     mqtt_client.on_message = on_message
     mqtt_client.on_publish = on_publish
+    mqtt_client.on_disconnect = on_disconnect
+    
+    if mqtt_profile['username'] == 'default':
+        print 'Please profile non-default client id to connect to'
+        return False
+
+    mqtt_client.username_pw_set(mqtt_profile['username'], mqtt_profile['password'])
     mqtt_client.connect(srv_ip, srv_port, srv_keepalive)
 
     mqtt_profile['client'] = mqtt_client

@@ -12,7 +12,11 @@
        				"broker_ip":"192.168.88.100",
    					"broker_port":1883,
    					"broker_keepalive":60,
-   					"transport":"tcp"
+   					"transport":"tcp",
+   					"username":"default",
+   					"password":"abcd1234!",
+   					"clean_session":1,
+   					"userdata":""
    				}       
-   }
+    }
 }

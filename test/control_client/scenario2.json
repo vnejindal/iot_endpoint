@@ -2,8 +2,8 @@
    "_comment":"Scenario File for temperature device type",
    "broker_ip":"127.0.0.1",
    "broker_port":1883,
-   "gateway_id":"192.168.88.100",
-   "endpoint_id":"192.168.88.70",
+   "gateway_id":"192.168.1.45",
+   "endpoint_id":"192.168.1.49",
    "device_id":111,
    "device_type":"temperature",
    "protocol":"mqtt",
@@ -53,6 +53,19 @@
     		"unit":"celcius",
     		"trigger_action":"alarm"
         }
+   	  },
+   	  {
+   	    "wait":5,
+   	    "_comment":"Disable the device",
+   	  	"action":"set",
+   	  	"state":"disabled"
+   	    
+   	  },
+   	  {
+   	    "wait":60,
+   	    "_comment":"Enable the device",
+   	  	"action":"set",
+   	  	"state":"enabled"  	    
    	  }
    ]
 }
