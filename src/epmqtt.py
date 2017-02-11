@@ -92,6 +92,21 @@ def device_client_start(type, id):
     if mqtt_profile['username'] == 'default':
         print 'Please profile non-default client id to connect to'
         return False
+    
+    if mqtt_profile['transport'] == 'tls':
+        server_cert = common.get_platform_delim().join(['..', 
+                                                         common.get_device_working_dir(),
+                                                         mqtt_profile['cert_directory'], 
+                                                         mqtt_profile['ca_cert']])
+        client_cert = common.get_platform_delim().join(['..',
+                                                         common.get_device_working_dir(),
+                                                         mqtt_profile['cert_directory'],
+                                                         mqtt_profile['client_cert']])
+        client_key = common.get_platform_delim().join(['..',
+                                                       common.get_device_working_dir(),
+                                                       mqtt_profile['cert_directory'],
+                                                       mqtt_profile['client_key']])
+        mqtt_client.tls_set(server_cert, client_cert, client_key) 
 
     mqtt_client.username_pw_set(mqtt_profile['username'], mqtt_profile['password'])
     mqtt_client.connect(srv_ip, srv_port, srv_keepalive)

@@ -10,17 +10,13 @@
        "mqtt": {
        				"subtopic":"control",
        				"broker_ip":"192.168.88.100",
-   					"broker_port":8883,
+   					"broker_port":1883,
    					"broker_keepalive":60,
-   					"transport":"tls",
-   					"username":"vnej",
-   					"password":"abcd1234",
+   					"transport":"tcp",
+   					"username":"default",
+   					"password":"abcd1234!",
    					"clean_session":1,
-   					"userdata":"",
-   					"cert_directory":"certs",
-   					"ca_cert":"ca.cert",
-   					"client_cert":"client.cert",
-   					"client_key":"client.key" 
+   					"userdata":""
    				}       
     }
 }

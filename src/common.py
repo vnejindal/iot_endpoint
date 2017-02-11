@@ -60,7 +60,9 @@ def get_device_config_dir():
     global device_config_dir
     return device_config_dir
 
-
+def get_device_working_dir():
+    global working_dir 
+    return working_dir
     
 def common_init():
     global working_dir
