@@ -1,0 +1,444 @@
+Microsoft Windows [Version 10.0.14393]
+(c) 2016 Microsoft Corporation. All rights reserved.
+
+C:\Users\Anuj>cd ../..
+
+C:\>cd OpenSSL-Win32
+
+C:\OpenSSL-Win32>cd bin
+
+C:\OpenSSL-Win32\bin>openssl.exe -new -x509 -days 1000 -extensions v3_ca -keyout ca.key -out ca.crt
+openssl:Error: '-new' is an invalid command.
+
+Standard commands
+asn1parse         ca                ciphers           cms              
+crl               crl2pkcs7         dgst              dh               
+dhparam           dsa               dsaparam          ec               
+ecparam           enc               engine            errstr           
+gendh             gendsa            genpkey           genrsa           
+nseq              ocsp              passwd            pkcs12           
+pkcs7             pkcs8             pkey              pkeyparam        
+pkeyutl           prime             rand              req              
+rsa               rsautl            s_client          s_server         
+s_time            sess_id           smime             speed            
+spkac             srp               ts                verify           
+version           x509
+
+Message Digest commands (see the `dgst' command for more details)
+md4               md5               mdc2              rmd160           
+sha               sha1
+
+Cipher commands (see the `enc' command for more details)
+aes-128-cbc       aes-128-ecb       aes-192-cbc       aes-192-ecb      
+aes-256-cbc       aes-256-ecb       base64            bf               
+bf-cbc            bf-cfb            bf-ecb            bf-ofb           
+camellia-128-cbc  camellia-128-ecb  camellia-192-cbc  camellia-192-ecb 
+camellia-256-cbc  camellia-256-ecb  cast              cast-cbc         
+cast5-cbc         cast5-cfb         cast5-ecb         cast5-ofb        
+des               des-cbc           des-cfb           des-ecb          
+des-ede           des-ede-cbc       des-ede-cfb       des-ede-ofb      
+des-ede3          des-ede3-cbc      des-ede3-cfb      des-ede3-ofb     
+des-ofb           des3              desx              idea             
+idea-cbc          idea-cfb          idea-ecb          idea-ofb         
+rc2               rc2-40-cbc        rc2-64-cbc        rc2-cbc          
+rc2-cfb           rc2-ecb           rc2-ofb           rc4              
+rc4-40            seed              seed-cbc          seed-cfb         
+seed-ecb          seed-ofb
+
+
+C:\OpenSSL-Win32\bin>
+C:\OpenSSL-Win32\bin>
+C:\OpenSSL-Win32\bin>
+C:\OpenSSL-Win32\bin>openssl.exe req -new -x509 -days 1000 -extensions v3_ca -keyout ca.key -out ca.crt
+Generating a 2048 bit RSA private key
+.............+++
+..........................................................................+++
+writing new private key to 'ca.key'
+Enter PEM pass phrase:
+14172:error:28069065:lib(40):UI_set_result:result too small:.\crypto\ui\ui_lib.c:825:You must type in 4 to 511 characters
+14172:error:0906406D:PEM routines:PEM_def_callback:problems getting password:.\crypto\pem\pem_lib.c:116:
+14172:error:0907E06F:PEM routines:DO_PK8PKEY:read key:.\crypto\pem\pem_pk8.c:130:
+
+C:\OpenSSL-Win32\bin>openssl.exe req -new -x509 -days 1000 -extensions v3_ca -keyout ca.key -out ca.crt
+Generating a 2048 bit RSA private key
+..+++
+...+++
+writing new private key to 'ca.key'
+Enter PEM pass phrase:
+23328:error:28069065:lib(40):UI_set_result:result too small:.\crypto\ui\ui_lib.c:825:You must type in 4 to 511 characters
+23328:error:0906406D:PEM routines:PEM_def_callback:problems getting password:.\crypto\pem\pem_lib.c:116:
+23328:error:0907E06F:PEM routines:DO_PK8PKEY:read key:.\crypto\pem\pem_pk8.c:130:
+
+C:\OpenSSL-Win32\bin>openssl.exe req -new -x509 -days 1000 -extensions v3_ca -keyout ca.key -out ca.crt
+Generating a 2048 bit RSA private key
+..........+++
+...................................+++
+writing new private key to 'ca.key'
+Enter PEM pass phrase:
+Verifying - Enter PEM pass phrase:
+-----
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [AU]:IN
+State or Province Name (full name) [Some-State]:Delhi
+Locality Name (eg, city) []:Delhi
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:83incs
+Organizational Unit Name (eg, section) []:engg
+Common Name (e.g. server FQDN or YOUR name) []:vne
+Email Address []:v@83incs.com
+
+C:\OpenSSL-Win32\bin>dir
+ Volume in drive C is OS
+ Volume Serial Number is B0B5-DD81
+
+ Directory of C:\OpenSSL-Win32\bin
+
+10-02-2017  15:59    <DIR>          .
+10-02-2017  15:59    <DIR>          ..
+10-02-2017  15:58             1,024 .rnd
+26-09-2016  09:00            13,824 4758cca.dll
+26-09-2016  09:00            12,288 aep.dll
+26-09-2016  09:00            10,752 atalla.dll
+10-02-2017  15:59             1,367 ca.crt
+10-02-2017  15:59             1,834 ca.key
+26-09-2016  02:49             5,688 CA.pl
+26-09-2016  09:00            24,576 capi.dll
+26-09-2016  09:00            16,384 chil.dll
+26-09-2016  09:00            14,336 cswift.dll
+26-09-2016  09:00             6,144 gmp.dll
+26-09-2016  09:01            59,904 gost.dll
+26-09-2016  09:00         1,265,664 libeay32.dll
+05-10-2013  02:38           970,912 msvcr120.dll
+26-09-2016  09:00             9,216 nuron.dll
+26-09-2016  02:49            10,835 openssl.cfg
+26-09-2016  09:01           444,928 openssl.exe
+26-09-2016  09:00            11,264 padlock.dll
+18-01-2017  13:15    <DIR>          PEM
+26-09-2016  09:00           274,432 ssleay32.dll
+26-09-2016  09:00            16,896 sureware.dll
+26-09-2016  09:00            13,312 ubsec.dll
+              21 File(s)      3,185,580 bytes
+               3 Dir(s)  453,747,924,992 bytes free
+
+C:\OpenSSL-Win32\bin>cd vne
+
+C:\OpenSSL-Win32\bin\vne>cd ..\openssl.exe
+The directory name is invalid.
+
+C:\OpenSSL-Win32\bin\vne>c:\OpenSSL-Win32\bin\openssl.exe genrsa -out server.key 2048
+Generating RSA private key, 2048 bit long modulus
+.................+++
+..........................................+++
+e is 65537 (0x10001)
+
+C:\OpenSSL-Win32\bin\vne>dir
+ Volume in drive C is OS
+ Volume Serial Number is B0B5-DD81
+
+ Directory of C:\OpenSSL-Win32\bin\vne
+
+10-02-2017  16:02    <DIR>          .
+10-02-2017  16:02    <DIR>          ..
+10-02-2017  15:59             1,367 ca.crt
+10-02-2017  15:59             1,834 ca.key
+10-02-2017  16:02             1,679 server.key
+               3 File(s)          4,880 bytes
+               2 Dir(s)  453,747,904,512 bytes free
+
+C:\OpenSSL-Win32\bin\vne>c:\OpenSSL-Win32\bin\openssl.exe req -out server.csr -key server.key -new
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [AU]:IN
+State or Province Name (full name) [Some-State]:delhi
+Locality Name (eg, city) []:delhi
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:profedge
+Organizational Unit Name (eg, section) []:iiot
+Common Name (e.g. server FQDN or YOUR name) []:serverhost
+Email Address []:p@profedge.com
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:
+An optional company name []:
+
+C:\OpenSSL-Win32\bin\vne>dir
+ Volume in drive C is OS
+ Volume Serial Number is B0B5-DD81
+
+ Directory of C:\OpenSSL-Win32\bin\vne
+
+10-02-2017  16:03    <DIR>          .
+10-02-2017  16:03    <DIR>          ..
+10-02-2017  15:59             1,367 ca.crt
+10-02-2017  15:59             1,834 ca.key
+10-02-2017  16:03             1,041 server.csr
+10-02-2017  16:02             1,679 server.key
+               4 File(s)          5,921 bytes
+               2 Dir(s)  453,747,900,416 bytes free
+
+C:\OpenSSL-Win32\bin\vne>c:\OpenSSL-Win32\bin\openssl.exe x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 1000
+Signature ok
+subject=/C=IN/ST=delhi/L=delhi/O=profedge/OU=iiot/CN=serverhost/emailAddress=p@profedge.com
+Getting CA Private Key
+Enter pass phrase for ca.key:
+
+C:\OpenSSL-Win32\bin\vne>dir
+ Volume in drive C is OS
+ Volume Serial Number is B0B5-DD81
+
+ Directory of C:\OpenSSL-Win32\bin\vne
+
+10-02-2017  16:04    <DIR>          .
+10-02-2017  16:04    <DIR>          ..
+10-02-2017  15:59             1,367 ca.crt
+10-02-2017  15:59             1,834 ca.key
+10-02-2017  16:04                17 ca.srl
+10-02-2017  16:04             1,265 server.crt
+10-02-2017  16:03             1,041 server.csr
+10-02-2017  16:02             1,679 server.key
+               6 File(s)          7,203 bytes
+               2 Dir(s)  453,741,244,416 bytes free
+
+C:\OpenSSL-Win32\bin\vne>openssl genrsa -des3 -out client.key 2048
+'openssl' is not recognized as an internal or external command,
+operable program or batch file.
+
+C:\OpenSSL-Win32\bin\vne>c:\OpenSSL-Win32\bin\openssl.exe
+OpenSSL> q
+
+C:\OpenSSL-Win32\bin\vne>c:\OpenSSL-Win32\bin\openssl.exe genrsa -des3 -out client.key 2048
+Generating RSA private key, 2048 bit long modulus
+........................................+++
+..............................................................................................................................+++
+e is 65537 (0x10001)
+Enter pass phrase for client.key:
+19972:error:28069065:lib(40):UI_set_result:result too small:.\crypto\ui\ui_lib.c:825:You must type in 4 to 1023 characters
+Enter pass phrase for client.key:
+Verifying - Enter pass phrase for client.key:
+Verify failure
+User interface error
+19972:error:0906906F:PEM routines:PEM_ASN1_write_bio:read key:.\crypto\pem\pem_lib.c:385:
+
+C:\OpenSSL-Win32\bin\vne>c:\OpenSSL-Win32\bin\openssl.exe genrsa -out client.key 2048
+Generating RSA private key, 2048 bit long modulus
+.....................................................+++
+.......+++
+e is 65537 (0x10001)
+
+C:\OpenSSL-Win32\bin\vne>dir
+ Volume in drive C is OS
+ Volume Serial Number is B0B5-DD81
+
+ Directory of C:\OpenSSL-Win32\bin\vne
+
+10-02-2017  16:05    <DIR>          .
+10-02-2017  16:05    <DIR>          ..
+10-02-2017  15:59             1,367 ca.crt
+10-02-2017  15:59             1,834 ca.key
+10-02-2017  16:04                17 ca.srl
+10-02-2017  16:06             1,675 client.key
+10-02-2017  16:04             1,265 server.crt
+10-02-2017  16:03             1,041 server.csr
+10-02-2017  16:02             1,679 server.key
+               7 File(s)          8,878 bytes
+               2 Dir(s)  453,744,209,920 bytes free
+
+C:\OpenSSL-Win32\bin\vne>c:\OpenSSL-Win32\bin\openssl.exe req -out client.csr -key client.key
+unable to load X509 request
+15672:error:0906D06C:PEM routines:PEM_read_bio:no start line:.\crypto\pem\pem_lib.c:707:Expecting: CERTIFICATE REQUEST
+^C
+C:\OpenSSL-Win32\bin\vne>c:\OpenSSL-Win32\bin\openssl.exe req -out client.csr -key client.key -new
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [AU]:IN
+State or Province Name (full name) [Some-State]:delhi
+Locality Name (eg, city) []:delhi
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:profedge
+Organizational Unit Name (eg, section) []:eng
+Common Name (e.g. server FQDN or YOUR name) []:vneclient
+Email Address []:v@profe.com
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:
+An optional company name []:
+
+C:\OpenSSL-Win32\bin\vne>dir
+ Volume in drive C is OS
+ Volume Serial Number is B0B5-DD81
+
+ Directory of C:\OpenSSL-Win32\bin\vne
+
+10-02-2017  16:07    <DIR>          .
+10-02-2017  16:07    <DIR>          ..
+10-02-2017  15:59             1,367 ca.crt
+10-02-2017  15:59             1,834 ca.key
+10-02-2017  16:04                17 ca.srl
+10-02-2017  16:07             1,033 client.csr
+10-02-2017  16:06             1,675 client.key
+10-02-2017  16:04             1,265 server.crt
+10-02-2017  16:03             1,041 server.csr
+10-02-2017  16:02             1,679 server.key
+               8 File(s)          9,911 bytes
+               2 Dir(s)  453,743,943,680 bytes free
+
+C:\OpenSSL-Win32\bin\vne>c:\OpenSSL-Win32\bin\openssl.exe x509 -req -in client.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out client.crt -days 1000
+Signature ok
+subject=/C=IN/ST=delhi/L=delhi/O=profedge/OU=eng/CN=vneclient/emailAddress=v@profe.com
+Getting CA Private Key
+Enter pass phrase for ca.key:
+
+C:\OpenSSL-Win32\bin\vne>dir
+ Volume in drive C is OS
+ Volume Serial Number is B0B5-DD81
+
+ Directory of C:\OpenSSL-Win32\bin\vne
+
+10-02-2017  16:08    <DIR>          .
+10-02-2017  16:08    <DIR>          ..
+10-02-2017  15:59             1,367 ca.crt
+10-02-2017  15:59             1,834 ca.key
+10-02-2017  16:08                17 ca.srl
+10-02-2017  16:08             1,257 client.crt
+10-02-2017  16:07             1,033 client.csr
+10-02-2017  16:06             1,675 client.key
+10-02-2017  16:04             1,265 server.crt
+10-02-2017  16:03             1,041 server.csr
+10-02-2017  16:02             1,679 server.key
+               9 File(s)         11,168 bytes
+               2 Dir(s)  453,743,939,584 bytes free
+
+C:\OpenSSL-Win32\bin\vne>dir
+ Volume in drive C is OS
+ Volume Serial Number is B0B5-DD81
+
+ Directory of C:\OpenSSL-Win32\bin\vne
+
+10-02-2017  16:08    <DIR>          .
+10-02-2017  16:08    <DIR>          ..
+10-02-2017  15:59             1,367 ca.crt
+10-02-2017  15:59             1,834 ca.key
+10-02-2017  16:08                17 ca.srl
+10-02-2017  16:08             1,257 client.crt
+10-02-2017  16:07             1,033 client.csr
+10-02-2017  16:06             1,675 client.key
+10-02-2017  16:04             1,265 server.crt
+10-02-2017  16:03             1,041 server.csr
+10-02-2017  16:02             1,679 server.key
+               9 File(s)         11,168 bytes
+               2 Dir(s)  453,728,776,192 bytes free
+
+C:\OpenSSL-Win32\bin\vne>c:\OpenSSL-Win32\bin\openssl.exe genrsa -out server.key 2048
+Generating RSA private key, 2048 bit long modulus
+......................................................+++
+.....+++
+e is 65537 (0x10001)
+
+C:\OpenSSL-Win32\bin\vne>c:\OpenSSL-Win32\bin\openssl.exe req -out server.csr -key server.key -new
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [AU]:IN
+State or Province Name (full name) [Some-State]:delhi
+Locality Name (eg, city) []:delhi
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:profedge
+Organizational Unit Name (eg, section) []:engg
+Common Name (e.g. server FQDN or YOUR name) []:192.168.1.100
+Email Address []:a@abc.com
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:
+An optional company name []:
+
+C:\OpenSSL-Win32\bin\vne>c:\OpenSSL-Win32\bin\openssl.exe x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 1000
+Signature ok
+subject=/C=IN/ST=delhi/L=delhi/O=profedge/OU=engg/CN=192.168.1.100/emailAddress=a@abc.com
+Getting CA Private Key
+Enter pass phrase for ca.key:
+
+C:\OpenSSL-Win32\bin\vne>c:\OpenSSL-Win32\bin\openssl.exe req -out server.csr -key server.key -new
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [AU]:IN
+State or Province Name (full name) [Some-State]:delhi
+Locality Name (eg, city) []:delhi
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:pra
+Organizational Unit Name (eg, section) []:lasf
+Common Name (e.g. server FQDN or YOUR name) []:192.168.88.100
+Email Address []:a@a.com
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:
+An optional company name []:
+
+C:\OpenSSL-Win32\bin\vne>c:\OpenSSL-Win32\bin\openssl.exe x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 1000
+Signature ok
+subject=/C=IN/ST=delhi/L=delhi/O=pra/OU=lasf/CN=192.168.88.100/emailAddress=a@a.com
+Getting CA Private Key
+Enter pass phrase for ca.key:
+
+C:\OpenSSL-Win32\bin\vne>c:\OpenSSL-Win32\bin\openssl.exe req -out server.csr -key server.key -new
+You are about to be asked to enter information that will be incorporated
+into your certificate request.
+What you are about to enter is what is called a Distinguished Name or a DN.
+There are quite a few fields but you can leave some blank
+For some fields there will be a default value,
+If you enter '.', the field will be left blank.
+-----
+Country Name (2 letter code) [AU]:IN
+State or Province Name (full name) [Some-State]:gurgaon
+Locality Name (eg, city) []:gurgaon
+Organization Name (eg, company) [Internet Widgits Pty Ltd]:algolabs
+Organizational Unit Name (eg, section) []:engg
+Common Name (e.g. server FQDN or YOUR name) []:192.168.1.36
+Email Address []:a@abc.com
+
+Please enter the following 'extra' attributes
+to be sent with your certificate request
+A challenge password []:
+An optional company name []:
+
+C:\OpenSSL-Win32\bin\vne>c:\OpenSSL-Win32\bin\openssl.exe x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 1000
+Signature ok
+subject=/C=IN/ST=gurgaon/L=gurgaon/O=algolabs/OU=engg/CN=192.168.1.36/emailAddress=a@abc.com
+Getting CA Private Key
+Enter pass phrase for ca.key:
+unable to load CA Private Key
+13876:error:06065064:digital envelope routines:EVP_DecryptFinal_ex:bad decrypt:.\crypto\evp\evp_enc.c:529:
+13876:error:23077074:PKCS12 routines:PKCS12_pbe_crypt:pkcs12 cipherfinal error:.\crypto\pkcs12\p12_decr.c:108:
+13876:error:2306A075:PKCS12 routines:PKCS12_item_decrypt_d2i:pkcs12 pbe crypt error:.\crypto\pkcs12\p12_decr.c:139:
+13876:error:0907B00D:PEM routines:PEM_READ_BIO_PRIVATEKEY:ASN1 lib:.\crypto\pem\pem_pkey.c:141:
+
+C:\OpenSSL-Win32\bin\vne>c:\OpenSSL-Win32\bin\openssl.exe x509 -req -in server.csr -CA ca.crt -CAkey ca.key -CAcreateserial -out server.crt -days 1000
+Signature ok
+subject=/C=IN/ST=gurgaon/L=gurgaon/O=algolabs/OU=engg/CN=192.168.1.36/emailAddress=a@abc.com
+Getting CA Private Key
+Enter pass phrase for ca.key:
+
+C:\OpenSSL-Win32\bin\vne>
