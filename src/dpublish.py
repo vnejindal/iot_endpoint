@@ -21,7 +21,7 @@ from imageop import scale
 def get_endpoint_config():
     return config.read_endpoint_config()
 
-def publish_temperature_data(type, id, client, device_config = None):
+def publish_temperature_data(dtype, did, client, device_config = None):
     """
     Reads the device type temperature
     """
@@ -34,12 +34,14 @@ def publish_temperature_data(type, id, client, device_config = None):
     
     sleep_time = 1
     while True:
-        if device.is_device_enabled(type, id):
+        if device.is_device_delete(dtype, did):
+            return 
+        if device.is_device_enabled(dtype, did):
             sleep_time = device_config['frequency'] 
             
             if not os.path.exists(file1) or not os.path.exists(file2):
-                print 'Device unavailable: ', type, id
-                device.device_disable({'type': type, 'id':id })
+                print 'Device unavailable: ', dtype, did
+                device.device_disable({'type': dtype, 'id':did })
                 continue
               
             infile1 = open(file1, "r")
@@ -70,26 +72,26 @@ def publish_temperature_data(type, id, client, device_config = None):
             data_string = json.dumps(temp_data)
             #print 'data_string : ', data_string 
         
-            topic = device.get_device_topic(type, id)
+            topic = device.get_device_topic(dtype, did)
             #publish the data
             infot = client.publish(topic, data_string, qos=0)
         time.sleep(sleep_time)
         #print 'sleeping...', sleep_time
 
     
-def read_device_data(type, id, client = None):
+def read_device_data(dtype, did, client = None):
     """Reads and publishes data 
     """
-    device_config = config.read_device_config(type, id)
+    device_config = config.read_device_config(dtype, did)
     print 'reading device: ', device_config['sensor']['type'], device_config['id']
-    if not common.equals_ignore_case(device_config['sensor']['type'], type) :
-        print 'Device type mismatch', device_config['sensor']['type'], type
+    if not common.equals_ignore_case(device_config['sensor']['type'], dtype) :
+        print 'Device type mismatch', device_config['sensor']['type'], dtype
         return
     if client is None: 
         client = epmqtt.get_mqtt_client()
         
     if common.equals_ignore_case(device_config['sensor']['type'], 'temperature') :
-        publish_temperature_data(type, id, client)
+        publish_temperature_data(dtype, did, client)
         #publish_temperature_data(type, id, client, device_config)
 
 def publish_response(topic, payload, client = None):

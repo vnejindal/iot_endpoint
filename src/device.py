@@ -65,8 +65,8 @@ def initialize():
     devices_dict['temperature'] = {}
     
 
-def get_device_topic(type, id):
-    return '/'.join(['publish', devices_dict[type][id]['topic']])
+def get_device_topic(dtype, did):
+    return '/'.join(['publish', devices_dict[dtype][did]['topic']])
     #return '/'.join([common.get_node_id(), 'device', type, id])
 
 
@@ -81,7 +81,7 @@ def device_add(device_data):
     Add device to existing list 
     """
     retval = 0
-    device_template = {}
+    #vne::tbd device_template = {}
     device_template = templates.get_temperature_template()
     device_template.update(device_data)
     
@@ -113,11 +113,7 @@ def device_delete(device_data):
     """
     retval = 0
     global devices_dict
-    devices_dict[device_data['type']].pop(device_data['id'], None)
-    print 'device removed successfully', device_data['type'], device_data['id']
-    """
-    vne::tbd:: remove the json file as well
-    """
+    devices_dict[device_data['type']][device_data['id']]['stopped'] = True
     return retval
 
 
@@ -183,35 +179,45 @@ def device_publish_thread(device_type, device_id):
     """
     print 'thread started ', device_type, device_id
     dpublish.read_device_data(device_type, device_id)
+    #Thread return, time to delete this device now
+    print 'device removed successfully', device_type, device_id
+    devices_dict[device_type].pop(device_id, None)
+    """
+    vne::tbd:: remove the json file as well
+    """
 
     
-def get_device_status(type, id):
+def get_device_status(dtype, did):
     global devices_dict
-    return devices_dict[type][id]['status']
+    return devices_dict[dtype][did]['status']
 
-def set_device_status(type, id, status):
+def is_device_delete(dtype, did):
+    global devices_dict
+    return devices_dict[dtype][did]['stopped']
+
+def set_device_status(dtype, did, status):
     """
     Sets device status 
     """
     global devices_dict
-    devices_dict[type][id]['status'] = status 
+    devices_dict[dtype][did]['status'] = status 
 
-def get_device_state(type, id):
+def get_device_state(dtype, did):
     global devices_dict
-    return devices_dict[type][id]['state']
+    return devices_dict[dtype][did]['state']
 
-def set_device_state(type, id, state):
+def set_device_state(dtype, did, state):
     """
     Sets device state 
     """
     global devices_dict
-    devices_dict[type][id]['state'] = state
+    devices_dict[dtype][did]['state'] = state
 
-def is_device_enabled(type, id):
-    return get_device_state(type, id) == 'enabled'
+def is_device_enabled(dtype, did):
+    return get_device_state(dtype, did) == 'enabled'
 
-def get_device_profile(type, id):
-    return devices_dict[type][id]
+def get_device_profile(dtype, did):
+    return devices_dict[dtype][did]
      
 def process_device_msg(msg_topic, msg_payload):
     """

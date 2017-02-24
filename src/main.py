@@ -4,8 +4,6 @@
 #entry point file for this module 
 """
 from time import sleep
-
-
 import os
 
 import common

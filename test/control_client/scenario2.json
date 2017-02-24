@@ -1,6 +1,6 @@
 {
    "_comment":"Scenario File for temperature device type",
-   "broker_ip":"127.0.0.1",
+   "broker_ip":"192.168.229.132",
    "broker_port":1883,
    "gateway_id":"192.168.1.36",
    "endpoint_id":"192.168.1.49",

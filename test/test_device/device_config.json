@@ -1,0 +1,5 @@
+{
+    "_comment": "Configuration file for dummy test device",
+    "device_type": "temperature",
+    "device_interface": "gpio"
+}
