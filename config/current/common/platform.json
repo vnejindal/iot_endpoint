@@ -4,11 +4,22 @@
    "python_ver":"2.7",
    "role":"endpoint",
    "board_type":"udo",
+   "capture":
+   {
+   		"status" : "true",
+   		"transport": "tls",
+   		"interface" : "eth0.10"
+   },
    "messaging":
    {
        "protocol":"mqtt",
        "mqtt": {
-       				"subtopic":"control",
+       				"subtopic":
+       				{
+       					"request" : "control",
+       					"response" : "response",
+       					"notify" : "alarm"
+       				},
        				"broker_ip":"192.168.88.100",
    					"broker_port":8883,
    					"broker_keepalive":60,
