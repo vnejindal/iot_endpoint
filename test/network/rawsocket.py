@@ -13,6 +13,131 @@ Author: Vinay Jindal <vinay.jindal@gmail.com>
 """
 import socket 
 import binascii
+import struct
+import sys
+
+class mqtt_packet:
+    def __init__(self, topic, payload = None):
+        self.topic = topic
+        self.payload = payload
+        pass
+    
+    def create_mqtt_packet(self):
+        
+        PUBLISH = 0x30
+        qos = 0
+        retain = False
+        dup = False
+        
+        utopic = self.topic.encode('utf-8')
+        command = PUBLISH | ((dup&0x1)<<3) | (qos<<1) | retain
+        packet = bytearray()
+        packet.extend(struct.pack("!B", command))
+        
+        if payload is None:
+            remaining_length = 2+len(utopic)
+            #self._easy_log(MQTT_LOG_DEBUG, "Sending PUBLISH (d"+str(dup)+", q"+str(qos)+", r"+str(int(retain))+", m"+str(mid)+", '"+topic+"' (NULL payload)")
+        else:
+            if isinstance(payload, str):
+                upayload = payload.encode('utf-8')
+                payloadlen = len(upayload)
+            elif isinstance(payload, bytearray):
+                payloadlen = len(payload)
+            elif isinstance(payload, unicode):
+                upayload = payload.encode('utf-8')
+                payloadlen = len(upayload)
+                
+            remaining_length = 2+len(utopic) + payloadlen
+        if qos > 0:
+            # For message id
+            remaining_length = remaining_length + 2
+        
+        self._pack_remaining_length(packet, remaining_length)
+        self._pack_str16(packet, topic)
+    
+        if qos > 0:
+            # For message id
+            packet.extend(struct.pack("!H", mid))
+
+        if payload is not None:
+            if isinstance(payload, str):
+                pack_format = str(payloadlen) + "s"
+                packet.extend(struct.pack(pack_format, upayload))
+            elif isinstance(payload, bytearray):
+                packet.extend(payload)
+            elif isinstance(payload, unicode):
+                pack_format = str(payloadlen) + "s"
+                packet.extend(struct.pack(pack_format, upayload))
+            else:
+                raise TypeError('payload must be a string, unicode or a bytearray.')
+    
+        return packet 
+    
+    def create_sub_packet(self, topic):
+       
+        SUBSCRIBE = 0x80
+        UNSUBSCRIBE = 0xA0
+        qos = 0
+        dup = False
+        
+        topics = [(topic.encode('utf-8'), qos)]
+        
+        remaining_length = 2
+        for t in topics:
+            remaining_length = remaining_length + 2+len(t[0])+1
+
+        command = SUBSCRIBE | (dup<<3) | (1<<1)
+        packet = bytearray()
+        packet.extend(struct.pack("!B", command))
+        self._pack_remaining_length(packet, remaining_length)
+        #local_mid = self._mid_generate()
+        local_mid = 1
+        packet.extend(struct.pack("!H", local_mid))
+        for t in topics:
+            self._pack_str16(packet, t[0])
+            packet.extend(struct.pack("B", t[1]))
+        return packet 
+    
+    def _pack_remaining_length(self, packet, remaining_length):
+        remaining_bytes = []
+        while True:
+            byte = remaining_length % 128
+            remaining_length = remaining_length // 128
+            # If there are more digits to encode, set the top bit of this digit
+            if remaining_length > 0:
+                byte = byte | 0x80
+
+            remaining_bytes.append(byte)
+            packet.extend(struct.pack("!B", byte))
+            if remaining_length == 0:
+                # FIXME - this doesn't deal with incorrectly large payloads
+                return packet
+    
+    def _pack_str16(self, packet, data):
+        if sys.version_info[0] < 3:
+            if isinstance(data, bytearray):
+                packet.extend(struct.pack("!H", len(data)))
+                packet.extend(data)
+            elif isinstance(data, str):
+                udata = data.encode('utf-8')
+                pack_format = "!H" + str(len(udata)) + "s"
+                packet.extend(struct.pack(pack_format, len(udata), udata))
+            elif isinstance(data, unicode):
+                udata = data.encode('utf-8')
+                pack_format = "!H" + str(len(udata)) + "s"
+                packet.extend(struct.pack(pack_format, len(udata), udata))
+            else:
+                raise TypeError
+        else:
+            if isinstance(data, bytearray) or isinstance(data, bytes):
+                packet.extend(struct.pack("!H", len(data)))
+                packet.extend(data)
+            elif isinstance(data, str):
+                udata = data.encode('utf-8')
+                pack_format = "!H" + str(len(udata)) + "s"
+                packet.extend(struct.pack(pack_format, len(udata), udata))
+            else:
+                raise TypeError
 
 class rawpacket:
     """
@@ -166,14 +291,14 @@ class rawpacket_v1:
                   ''.join(map(chr,[0x80, 0xc6, 
                   0x40, 0x00, 
                   0x40, 
-                  0x11,  # Protocol
+                  0x06,  # Protocol
                   0x00, 0x00])), # checksum - set to 0x00 
                   self._get_binary_ipaddr(self.srcip),
                   self._get_binary_ipaddr(self.dstip)
                   ])
      
     
-    def _get_tpt_hdr(self):
+    def _get_udp_hdr(self):
         """
         Creates Transport Header;
             For UDP Transport 
@@ -187,16 +312,48 @@ class rawpacket_v1:
                         self.totlen - 20 - 12, 
                         0x00
                         ]))           
-
+    def _get_tcp_hdr(self):
+        """
+        creates TCP transport header 
+         - Source Port - 2 bytes
+         - Destination Port - 2 bytes
+         - Sequence Number - 4 bytes 
+         - Ack number - 4 bytes 
+         - other fields - 4 bytes 
+         - checksum - 2 bytes
+         - urgent pointer - 2 bytes
+         
+        
+        """
+        
+        return ''.join(map(self._get_int_to_hex, [self.sport,
+                                   self.dport,
+                                   0x00,0x01,
+                                   0x00,0x00,
+                                   0x5018,
+                                   0x0805,
+                                   0x00, #checksum 
+                                   0x00, #urgent pointer                 
+                                   ]))
+        
+    def get_udp_packet(self):
+        """
+        New version of get packet function 
+        """
+        eth_hdr = self._get_eth_hdr()
+        ip_hdr = self._get_ip_hdr()
+        tpt_hdr = self._get_udp_hdr()
+        return eth_hdr + ip_hdr + tpt_hdr + self.payload
+            
     def get_packet(self):
         """
         New version of get packet function 
         """
         eth_hdr = self._get_eth_hdr()
         ip_hdr = self._get_ip_hdr()
-        tpt_hdr = self._get_tpt_hdr()
+        tpt_hdr = self._get_tcp_hdr()
         return eth_hdr + ip_hdr + tpt_hdr + self.payload
-            
+    
     ######### NEW FUNCTIONS ###########
     
 class rawsocket:
@@ -224,13 +381,16 @@ class rawsocket:
 
 
 payload = 'Hello Vne'
+topic = '/hello/state'
+mqtt_pkt = mqtt_packet(payload, topic)
 pkt = rawpacket_v1('00:0a:ff:12:ff:fe',
                    '00:0a:ff:12:ff:ff',
                    '10.10.10.10',
                    '10.10.10.11',
                    5555,
                    5655,
-                   payload)
+                   mqtt_pkt.create_sub_packet(topic))
+                   #mqtt_pkt.create_mqtt_packet())
 
 rs = rawsocket('lo')
 rs.send_packet(pkt.get_packet())
