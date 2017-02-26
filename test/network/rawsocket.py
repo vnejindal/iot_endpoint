@@ -130,8 +130,8 @@ class rawpacket_v1:
         """
         returns binary ipaddr of string dotted decimal notation 
         """
-        
-        return binascii.unhexlify(''.join(ipaddr.split('.')))
+        return ''.join([self._get_int_to_hex(int(x),2) for x in ipaddr.split('.')])
+        #return binascii.unhexlify(''.join(ipaddr.split('.')))
     
     def _get_eth_hdr(self):
         """
