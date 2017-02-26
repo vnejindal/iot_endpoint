@@ -7,17 +7,19 @@ import socket
 
 from time import sleep
 
+import rawsocket
+
 
 class packetMirror:
     """This is a class that implements packet mirroring
     """
-    def __init__(self, ipaddr, port, interface = None, start = False):
+    def __init__(self, interface = None, start = False):
         print 'Mirroring object created'
-        self.ipaddr = ipaddr
-        self.port = port 
         self.interface = interface 
         self.start = start
         self.msgq = Queue()
+        self.rawsocket = rawsocket.rawsocket(self.interface)
+        
         print 'starting thread'
         try:
             self.thread_id = Thread(target=self.thread_start, args=(self.start,))
@@ -53,8 +55,15 @@ class packetMirror:
         """
         Processes messages received in queue
         """
-        print 'sent:', msg, self.ipaddr, self.port
-        self.sock.sendto(msg,(self.ipaddr, self.port))
+        raw_packet = rawsocket.rawpacket_v1(msg[0],
+                                            msg[1],
+                                            msg[2],
+                                            msg[3],
+                                            msg[4],
+                                            msg[5],
+                                            msg[6])
+        
+        self.rawsocket.sendpacket(raw_packet.get_packet())
         pass
     
     def start_capture(self):
@@ -68,9 +77,17 @@ class packetMirror:
         starts the queue thread 
         """
         print 'thread started'
+        self.process_queue()
+        
+    def thread_start_old(self, start):
+        """
+        starts the queue thread 
+        """
+        print 'thread started'
         
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.sock.bind(('192.168.1.39', 18888))
+        
         self.process_queue()
          
     def __str__(self):        
@@ -84,15 +101,22 @@ class packetMirror:
         print self
         
 
-ipaddr, port = '192.168.1.49', 18888
-pkt_obj = packetMirror(ipaddr, port)
+pkt_obj = packetMirror('lo')
 
 pkt_obj.start_capture()
 
 while True:
     packet = 'ABCD'
+    payload = ['00:0a:ff:12:ff:fe',
+               '00:0a:ff:12:ff:ff',
+               '10.10.10.10',
+               '10.10.10.11',
+               5555,
+               5655,
+               packet]
+    
     print 'sending packets'
-    pkt_obj.put_msg(packet)
+    pkt_obj.put_msg(payload)
     print pkt_obj
     sleep(1)
 
