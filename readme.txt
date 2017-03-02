@@ -1,3 +1,6 @@
+Directories: 
+-- tools - Inhouse developed tools
+-- test - playground for experimentation
 
 
 #vne::tbd::
@@ -5,4 +8,4 @@
   -- messages logging 
   -- gateway/endpoint/device authentication
   -- messaging encryption and decryption 
-  -- data snooping and dissection 
+  -- data snooping and dissection
