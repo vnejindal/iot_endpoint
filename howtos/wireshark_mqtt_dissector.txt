@@ -1,0 +1,28 @@
+======================================================================================================
+Wireshark (version 1.12.5 at the time of writting) lists MQTT as supported protocol but could not parse it from the TCP payload by default. We can add some plugins to enable it.
+
+Download the Wireshark Generic Dissector (WSGD) for Windows or Linux, with regard to the Wireshark version
+
+http://wsgd.free.fr/download.html
+
+Find out where is the Global Plugins and Personal Plugins folder from menu Help / About Wireshark / Folders.
+
+Put the generic.dll (Win) or generic.so (Linux) to the Global Plugins or Personal Plugins folder.
+
+Download MQTT 3.1 generic dissector and put it under the same plugin folder
+
+http://false.ekta.is/wp-content/uploads/2011/06/mqtt_wireshark_generic_dissector.zip
+
+mqtt3.1.wsgd  : protocol name, parent dissector ...  
+mqtt3.1.fdesc : data format description
+Restart Wireshark and confirm from menu Help / About Wireshark / Plugins.
+
+Test with IoT SDK MQTT examples and catch MQTT packets in Wireshark
+
+======================================================================================================
+Following link helps out for providing MQTT dissector for linux based wireshark: 
+  https://devzone.nordicsemi.com/blogs/691/parse-mqtt-message-in-wireshark-for-iot-test/
+
+Other links: 
+http://false.ekta.is/2011/06/mqtt-dissector-decoder-for-wireshark/
+https://mosquitto.org/2011/07/wireshark-mqtt-decoder/
