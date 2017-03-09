@@ -1,46 +1,72 @@
 # !/usr/bin/bash 
 
+#vne::tbds
+## Uninstall functionality
+#pwd authentication in novnc
+#https support in webserver, tty and novnc
+#wireshark functionality 
 
-log_file=install.log
-cur_time=`date`
-echo 'Installation started'
+#check if sshd service running or not
+#cleanup function 
+#service and configuration persistence
+####################################################
+
+#### GLOBAL VARIABLES ####
+LOG_FILE=${PWD##*/}.log
+CONFIG_FILE=install.config
+COMMAND_OPTS="$@"
+DRYRUN=0
 
 {
-set -x
-echo "cli params: "
-echo "$0 $@"
-echo "Hostname: `hostname`"
-echo "ip list: `ip addr`"
-echo ""
-command=`uname -a;echo; lsb_release -a`
-echo "------------------------------------------"
-echo "Installation started $cur_time"
-echo "------------------------------------------"
-echo $command 
-
-os_ver=`uname -a | awk {'print $2'}`
-config_file=install.config
-#Config file for tty.js module
-tty_configjson=ttyconfig.json
-ip_token='ip_address'
-port_token='port'
-
-if [ $os_ver != 'ubuntu' ] && [ $os_ver != 'Ubuntu' ]; then
-  echo 'OS version: $os_ver not supported. Exiting.'
-  exit 1
-fi 
-if [ `whoami` != 'root' ]; then 
-  echo 'User is not root. Exiting'
-  exit 1
-fi 
-if [ ! -f $config_file ]; then 
-  echo 'Config file: $config_file does not exist. Incomplete installation. Exiting'
+env_validate()
+{
+DELIM=":"
+if [ ! -f $CONFIG_FILE ]; then
+  echo ' $CONFIG_FILE does not exist. Incomplete installation. Exiting'
   exit 1
 fi 
 if [ ! -f $tty_configjson ]; then 
   echo "$tty_configjson does not exist. Incomplete installation. Exiting"
   exit 1
 fi 
+
+OS=`cat $CONFIG_FILE | grep 'os' | cut -f2 -d"$DELIM"`
+os_ver=`uname -a | awk {'print $2'}`
+if [ $os_ver != $OS ] ; then
+  echo 'OS version: $os_ver not supported. Exiting.'
+  exit 1
+fi 
+
+if [ `whoami` != 'root' ]; then 
+  echo 'User is not root. Exiting'
+  exit 1
+fi 
+
+}
+sys_config()
+{
+cur_time=`date`
+echo "------------------------------------------"
+echo "Installation started $cur_time"
+echo "------------------------------------------"
+echo "cli params: "
+echo $0 $COMMAND_OPTS
+echo "Hostname: `hostname`"
+echo "ip list: `ip addr`"
+echo ""
+command=`uname -a;echo; lsb_release -a`
+echo $command 
+}
+
+env_validate
+sys_config
+} >> $LOG_FILE 2>&1
+
+config_file=webaccess.config
+#Config file for tty.js module
+tty_configjson=ttyconfig.json
+ip_token='ip_address'
+port_token='port'
 
 ipaddr=`cat $config_file | grep $ip_token | awk {'print $3'}`
 port=`cat $config_file | grep $port_token | awk {'print $3'}`
@@ -202,36 +228,110 @@ start_services()
   start_nodejs_server
 }
 
-if [ $1 = "stop" ]; then
-stop_services
-echo "Services Stopped"
-exit 1
+
+
+######################################################
+usage()
+{
+    echo "Usage: $0 [params] install|uninstall|start|stop"
+    echo "params can be one of following:"
+    echo "    --version | -v     : Print out Software version and exit"
+    echo "    --help | -h        : Print out this help message"
+    echo "    --dry-run| -d      : Dry run the utility without actually changing anything"
+    exit 1
+}
+if test $# -lt 1; then
+	usage
 fi
-#Functions calling starts here
-validate_network_params
-install_nodejs_modules
-params_replace
-install_x11vnc
-install_novnc
-final_print
-start_services
-echo "Installation complete"
-echo "Please check $log_file file for details."
 
-} >> $log_file 2>&1
+get_version()
+{
+REL_FILE='release'
+MAJOR='major'
+MINOR='minor'
+BUILD='build'
+DELIM=":"
+MAVER=`cat $REL_FILE | grep $MAJOR | cut -f2 -d"$DELIM"`
+MIVER=`cat $REL_FILE | grep $MINOR | cut -f2 -d"$DELIM"`
+BUVER=`cat $REL_FILE | grep $BUILD | cut -f2 -d"$DELIM"`
+echo "version - $MAVER.$MIVER.$BUVER"
+}
+
+while true
+do
+    case "$1" in
+    --version | -v)
+        get_version
+	exit 0
+	;;
+    -h | --help)
+	usage
+	;;
+    -d | --dry-run)
+	DRYRUN=1
+        shift
+	;;
+    -*)
+	echo Unsupported Option: "$1"
+	usage
+	;;
+    *)
+	break
+	;;
+    esac
+done
 
 
-echo "-----------------------------------------------------------"
-echo "Webserver running at: http://$ipaddr:$port"
-echo "-----------------------------------------------------------"
+install()
+{
+   echo "Installing..."
+   validate_network_params
+   install_nodejs_modules
+   params_replace
+   install_x11vnc
+   install_novnc
+   final_print
+   echo "Installation complete"
+   echo "-----------------------------------------------------------"
+   echo "Webserver running at: http://$ipaddr:$port"
+   echo "-----------------------------------------------------------"
+}
 
+uninstall()
+{
+    echo "Uninstalling..."
+    echo "vne::tbd:: not implemented yet :("
 
-#vne::tbds
-#pwd authentication in novnc
-#https support in webserver, tty and novnc
-#wireshark functionality 
+}
+appstart()
+{
+    echo "Staring app..."
+    start_services
+}
+appstop()
+{
+    echo "Stopping app..."
+    stop_services
+}
 
-#check if sshd service running or not
-#cleanup function 
-#service and configuration persistence
+COMMAND=$1
+echo "Command is $COMMAND"
 
+case $COMMAND in 
+install)
+install
+;;
+uninstall)
+uninstall
+;;
+start)
+appstart
+;;
+stop)
+appstop
+;;
+*)
+echo Unsupported Option: "$COMMAND"
+usage
+;;
+esac

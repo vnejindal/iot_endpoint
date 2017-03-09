@@ -4,7 +4,7 @@ Usage:
 =======
 -- User should be root. 
 -- untar this archive in a directory.
--- Open 'install.config' file to change the IPv4 address and Port numbers wrt to installation environment. 
+-- Open 'webaccess.config' file to change the IPv4 address and Port numbers wrt to installation environment. 
 -- For installation: 
 ./install.sh 
 -- If installation is complete, following output will be shown.
