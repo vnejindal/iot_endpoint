@@ -45,6 +45,12 @@ create_release()
      return 1
   fi
 
+  get_version
+  RELEASE_NAME=${SW_DIR}_$MAVER.$MIVER.$BUVER
+  if [ -d $RELEASE_NAME ]; then 
+     \rm -rf $RELEASE_NAME
+  fi
+  mkdir -v $RELEASE_NAME
   #copy respective modules in release directory
   for module in `cat $SW_DIR/modules`
   do 
@@ -56,16 +62,15 @@ create_release()
          echo "Package $pname does not exist"
          exit 1
       fi
-      cp $PKG_DIR/$pname $SW_DIR
-      cp $PKG_DIR/$psha $SW_DIR
+      cp $PKG_DIR/$pname $RELEASE_NAME
+      cp $PKG_DIR/$psha $RELEASE_NAME
   done
 
-  get_version;
-  RELEASE_NAME=${SW_DIR}_$MAVER.$MIVER.$BUVER
-  tar -cvf ${RELEASE_NAME}.tar $SW_DIR
+  tar -cvf ${RELEASE_NAME}.tar $RELEASE_NAME
   gzip ${RELEASE_NAME}.tar
   echo "Software Release: ${RELEASE_NAME}.tar.gz"
   sha512sum ${RELEASE_NAME}.tar.gz > ${RELEASE_NAME}.sha
+  rm -rf $RELEASE_NAME
 }
 
 check_release()

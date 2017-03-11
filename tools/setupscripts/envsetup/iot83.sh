@@ -17,28 +17,32 @@ usage()
 }
 
 if test $# -lt 1; then
-	usage
+    usage
 fi
 
 #### GLOBAL VARIABLES ####
 INSTALL_DIR=/tmp
 BASE_DIR=$INSTALL_DIR/iot
+## Configuration Files 
 CONFIG_DIR=$BASE_DIR/config
+## Release directory 
 REL_DIR=$BASE_DIR/release
+## Environment Config 
+ENV_CONFIG=$BASE_DIR/envsetup/.config
 LOG_FILE=${PWD##*/}.log
-CONFIG_FILE=install.config
 COMMAND_OPTS="$@"
 DRYRUN=0
 
 RELEASE_FILE=''
-CUR_DIR=current
+RELEASE_NAME=''
 RELS_DIR=releases
+CUR_DIR=current
 ARCHIVE_DIR=.archive
 CONFIG_FILE=.config
 
-{
-
-} >> $LOG_FILE 2>&1
+#{
+#
+#} >> $LOG_FILE 2>&1
 
 get_version()
 {
@@ -77,12 +81,19 @@ do
     esac
 done
 
-##vne::tbd:: read INSTALL_DIR
+
 show_status()
 {
+   cd $REL_DIR
+   if [ ! -f $CONFIG_FILE ];then 
+       echo "Installation corrupt"
+       exit 1
+   fi 
 
-   
-
+   act_rel=`cat $CONFIG_FILE | grep active | cut -f2 -d':'`
+   bk_rel=`cat $CONFIG_FILE | grep backup | cut -f2 -d':'`
+   echo "Active  $act_rel" 
+   echo "Backup  $bk_rel" 
 }
 
 validate_setup()
@@ -92,13 +103,12 @@ validate_setup()
       echo "setup incomplete"
    elif [ ! -d $ARCHIVE_DIR ]; then 
       echo "setup incomplete"
-   elif [ ! -f $CONFIG_FILE ]; then 
-      echo "setup incomplete"
    elif [ ! -f $RELEASE_FILE ]; then
+      echo "$RELEASE_FILE not present"
    else
-   retval=1
+      retval=1
    fi
-   if [ $retval = "1" ]; then
+   if [ $retval = "0" ]; then
       exit 1
    fi
 }
@@ -111,58 +121,81 @@ install_release()
 
   #if any failure occurs, rollback to earlier version
   TMP_DIR=tmp
-  set -x
+  set +x
   cd $REL_DIR
   validate_setup
   
   if [ -d $TMP_DIR ]; then 
-     rm -rf $TMP_DIR
+     \rm -rf $TMP_DIR
   fi 
   mkdir -v $TMP_DIR
   cp $RELEASE_FILE $TMP_DIR
   pushd $PWD
   cd $TMP_DIR
   tar -zxvf $RELEASE_FILE
+  RELEASE_NAME=`ls | grep -v tar`
   #vne::tbd:: check return value of tar command
   popd 
-  #copy this release dir to releases directory 
-  #take a backup of .config file 
-  #read .config file and get active and backup release
-  #update .config file to mark backup as new directory 
   #
-  if [! -d $CUR_DIR ]; then 
-    echo "First installation"
-    #update .config file to mark current release as new 
-    # mark current release to synlink to new 
+  mv $TMP_DIR/$RELEASE_NAME $RELS_DIR
+  if [ ! -f $CONFIG_FILE ]; then 
+    echo "Initial installation"
+    ln -fs $RELS_DIR/$RELEASE_NAME $CUR_DIR
+    echo "active:$RELEASE_NAME" > $CONFIG_FILE
+    echo "backup:$RELEASE_NAME" >> $CONFIG_FILE
+  else
+    act_rel=`cat $CONFIG_FILE | grep active | cut -f2 -d':'`
+    bk_rel=`cat $CONFIG_FILE| grep backup | cut -f2 -d':'`
+    if [ $act_rel != $bk_rel ]; then
+       mv $RELS_DIR/$bk_rel $ARCHIVE_DIR
+    fi
+    echo "active:$act_rel" > $CONFIG_FILE
+    echo "backup:$RELEASE_NAME" >> $CONFIG_FILE
   fi 
-  #mv backup release to .archive dir 
+  cp $RELEASE_FILE $ARCHIVE_DIR
+  \rm -rf $TMP_DIR
 }
 
-restore_backup()
+cutover_release()
 {
+   set +x
+   cd $REL_DIR
+   if [ ! -f $CONFIG_FILE ];then 
+       echo "Installation corrupt"
+       exit 1
+   fi 
+
+   act_rel=`cat $CONFIG_FILE | grep active | cut -f2 -d':'`
+   bk_rel=`cat $CONFIG_FILE | grep backup | cut -f2 -d':'`
+   rm $CUR_DIR
+   ln -fs $RELS_DIR/$bk_rel $CUR_DIR
+   echo "active:$bk_rel" > $CONFIG_FILE
+   echo "backup:$act_rel" >> $CONFIG_FILE
+   echo "cutover complete"
 }
+
 COMMAND=$1
 echo "Command is $COMMAND"
 
 
+pushd $PWD
 case $COMMAND in 
 status)
 show_status
 ;;
 install)
-pushd $PWD
 RELEASE_FILE=$2
 install_release
-popd 
 ;;
 cutover)
 cutover_release
 ;;
 revert)
-revert_release
+cutover_release
 ;;
 *)
 echo Unsupported Option: "$COMMAND"
 usage
 ;;
 esac
+popd 

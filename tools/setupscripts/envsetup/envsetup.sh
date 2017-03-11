@@ -5,11 +5,11 @@
 # It is needed only the first time 
 # Release Structure
 # install_dir/iot/release/
-    |- .archive (d) 
-    |- .config (f)
-          |- active:
-          |- backup:
-    |- releases (d)
+#    |- .archive (d) 
+#    |- .config (f)
+#          |- active:
+#          |- backup:
+#    |- releases (d)
 #################################################################
 
 set +x
@@ -37,16 +37,14 @@ ENV_DIR=$BASE_DIR/envsetup
 #CUR_DIR=current
 RELS_DIR=releases
 ARCHIVE_DIR=.archive
-CONFIG_FILE=.config
 
 LOG_FILE=${PWD##*/}.log
-CONFIG_FILE=install.config
 COMMAND_OPTS="$@"
 DRYRUN=0
 
-{
-
-} >> $LOG_FILE 2>&1
+#{
+#
+#} >> $LOG_FILE 2>&1
 
 get_version()
 {
@@ -102,11 +100,11 @@ setup()
   (mkdir -v $CONFIG_DIR $REL_DIR $ENV_DIR)
   cd $REL_DIR
   mkdir -v $RELS_DIR $ARCHIVE_DIR
-  touch $CONFIG_FILE
   #ln -s $PRIM_DIR $CUR_DIR
   popd
   cp -rf * $ENV_DIR
   echo "install_path:$INSTALL_DIR" > $ENV_DIR/.config
+  echo "date:`date`" >> $ENV_DIR/.config
 }
 remove()
 {
