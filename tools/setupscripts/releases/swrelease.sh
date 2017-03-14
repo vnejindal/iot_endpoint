@@ -34,7 +34,7 @@ MAVER=`cat $REL_FILE | grep $MAJOR | cut -f2 -d"$DELIM"`
 MIVER=`cat $REL_FILE | grep $MINOR | cut -f2 -d"$DELIM"`
 BUVER=`cat $REL_FILE | grep $BUILD | cut -f2 -d"$DELIM"`
 echo "version - $MAVER.$MIVER.$BUVER"
-echo "Build Date - `date`" >> $REL_FILE
+echo "version: $MAVER.$MIVER.$BUVER; Build Date - `date`" >> $REL_FILE
 }
 
 create_release()
@@ -51,6 +51,7 @@ create_release()
      \rm -rf $RELEASE_NAME
   fi
   mkdir -v $RELEASE_NAME
+  cp $SW_DIR/* $RELEASE_NAME
   #copy respective modules in release directory
   for module in `cat $SW_DIR/modules`
   do 

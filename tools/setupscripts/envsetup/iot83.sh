@@ -6,6 +6,14 @@
 ####################################################################
 
 set +x
+pushd () {
+    command pushd "$@" > /dev/null
+}
+
+popd () {
+    command popd "$@" > /dev/null
+}
+
 usage()
 {
     echo "Usage: $0 [params] status|<install release.tar.gz>|cutover|revert"
@@ -39,6 +47,12 @@ RELS_DIR=releases
 CUR_DIR=current
 ARCHIVE_DIR=.archive
 CONFIG_FILE=.config
+#if [ ! -f $CONFIG_FILE ];then 
+#    echo "Installation corrupt"
+#    exit 1
+#fi 
+ACTIVE_REL=`cat $REL_DIR/$CONFIG_FILE | grep active | cut -f2 -d':'`
+BACKUP_REL=`cat $REL_DIR/$CONFIG_FILE| grep backup | cut -f2 -d':'`
 
 #{
 #
@@ -81,19 +95,10 @@ do
     esac
 done
 
-
 show_status()
 {
-   cd $REL_DIR
-   if [ ! -f $CONFIG_FILE ];then 
-       echo "Installation corrupt"
-       exit 1
-   fi 
-
-   act_rel=`cat $CONFIG_FILE | grep active | cut -f2 -d':'`
-   bk_rel=`cat $CONFIG_FILE | grep backup | cut -f2 -d':'`
-   echo "Active  $act_rel" 
-   echo "Backup  $bk_rel" 
+   echo "Active  $ACTIVE_REL" 
+   echo "Backup  $BACKUP_REL" 
 }
 
 validate_setup()
@@ -112,6 +117,36 @@ validate_setup()
       exit 1
    fi
 }
+
+## Will unarchive each of individual modules and 
+# install them 
+#
+install_modules()
+{
+
+    set +x
+    cd $REL_DIR/$RELS_DIR/$RELEASE_NAME 
+    for modinfo in `cat modules`
+    do 
+        mod_name=`echo $modinfo | cut -f1 -d':'`
+        mod_rel=`echo $modinfo | cut -f2 -d':'`
+        mod_file=${mod_name}_${mod_rel}.tar.gz
+        sha_file=${mod_name}_${mod_rel}.sha
+        if [ ! -f $mod_file ]; then 
+             echo "Module: $module_file does not exist"
+             exit 1
+        fi 
+        sha512sum -c $sha_file
+        if [ $? -eq 0 ]; then 
+             echo "sha match successful"
+             tar -zxvf $mod_file 
+        else
+             echo "invalid module: sha does not match"
+             exit 1
+        fi
+    done
+}
+
 install_release()
 {
   #check if primary, secondary and active directories exists
@@ -130,7 +165,7 @@ install_release()
   fi 
   mkdir -v $TMP_DIR
   cp $RELEASE_FILE $TMP_DIR
-  pushd $PWD
+  pushd $PWD 
   cd $TMP_DIR
   tar -zxvf $RELEASE_FILE
   RELEASE_NAME=`ls | grep -v tar`
@@ -141,19 +176,21 @@ install_release()
   if [ ! -f $CONFIG_FILE ]; then 
     echo "Initial installation"
     ln -fs $RELS_DIR/$RELEASE_NAME $CUR_DIR
+    ACTIVE_REL=$RELEASE_NAME
+    BACKUP_REL=$RELEASE_NAME
     echo "active:$RELEASE_NAME" > $CONFIG_FILE
     echo "backup:$RELEASE_NAME" >> $CONFIG_FILE
   else
-    act_rel=`cat $CONFIG_FILE | grep active | cut -f2 -d':'`
-    bk_rel=`cat $CONFIG_FILE| grep backup | cut -f2 -d':'`
-    if [ $act_rel != $bk_rel ]; then
-       mv $RELS_DIR/$bk_rel $ARCHIVE_DIR
+    if [ $ACTIVE_REL != $BACKUP_REL ]; then
+       mv $RELS_DIR/$BACKUP_REL $ARCHIVE_DIR
     fi
-    echo "active:$act_rel" > $CONFIG_FILE
+    BACKUP_REL=$RELEASE_NAME
+    echo "active:$ACTIVE_REL " > $CONFIG_FILE
     echo "backup:$RELEASE_NAME" >> $CONFIG_FILE
   fi 
   cp $RELEASE_FILE $ARCHIVE_DIR
   \rm -rf $TMP_DIR
+  install_modules 
 }
 
 cutover_release()
@@ -165,18 +202,15 @@ cutover_release()
        exit 1
    fi 
 
-   act_rel=`cat $CONFIG_FILE | grep active | cut -f2 -d':'`
-   bk_rel=`cat $CONFIG_FILE | grep backup | cut -f2 -d':'`
    rm $CUR_DIR
-   ln -fs $RELS_DIR/$bk_rel $CUR_DIR
-   echo "active:$bk_rel" > $CONFIG_FILE
-   echo "backup:$act_rel" >> $CONFIG_FILE
+   ln -fs $RELS_DIR/$BACKUP_REL $CUR_DIR
+   echo "active:$BACKUP_REL" > $CONFIG_FILE
+   echo "backup:$ACTIVE_REL" >> $CONFIG_FILE
    echo "cutover complete"
 }
 
 COMMAND=$1
-echo "Command is $COMMAND"
-
+#echo "Command is $COMMAND"
 
 pushd $PWD
 case $COMMAND in 
