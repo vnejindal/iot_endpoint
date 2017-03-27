@@ -148,6 +148,19 @@ cp mqtt3* $PLUGIN_DIR
 cd -
 rm -rf $TMP_DIR
 }
+
+get_prerequisite_package()
+{
+   pkg_state=`dpkg --get-selections | grep -w wmctrl | head -1| awk {'print $2'}`
+   if [ $pkg_state = 'install' ]; then 
+      echo 'wmctrl is already installed'
+   else
+      echo 'Installing wmctrl'
+      sudo apt-get install -y wmctrl
+   fi
+   wmctrl --version
+}
+
 get_wireshark()
 {
 validate_wireshark
@@ -159,22 +172,38 @@ wireshark --version
 install_dissectors
 }
 
+get_captureInterface_and_filter()
+{
+   DELIM=":"
+   CAP_IFACE=`cat $CONFIG_FILE | grep 'wsinf' | cut -f2 -d"$DELIM"`
+   CAP_FILTER=`cat $CONFIG_FILE | grep 'wsfilter' | cut -f2 -d"$DELIM"`
+}
+
 start_wireshark()
 {
   echo "Interfaces available for capture"
   PCAP_FILE='/tmp/out.pcap'
   #enable dumpcap for non-root users
   sudo setcap 'CAP_NET_RAW+eip CAP_NET_ADMIN+eip' /usr/bin/dumpcap
-  wireshark -D
-  wireshark -kSl -i lo -w $PCAP_FILE
+  get_captureInterface_and_filter
+  #TODO: add wshark as a new user here and run wireshark from that user
+  /bin/su - govind /bin/bash -c "wireshark -D;wireshark -kSl -i $CAP_IFACE -f $CAP_FILTER -w $PCAP_FILE&"
+
+  sleep 2
+  winid=`xwininfo -name wireshark |grep "Window id" |awk {'print $4'}`
+  wmctrl -i -a $winid fullscreen
+  #wireshark -D
+  #wireshark -kSl -i lo -w $PCAP_FILE
 }
+
 install()
 {
     echo "Installing..."
     if [ `whoami` != 'root' ]; then 
        echo 'User is not root. Exiting'
        exit 1
-    fi 
+    fi
+    get_prerequisite_package 
     get_wireshark
 
 }
@@ -182,6 +211,7 @@ uninstall()
 {
     echo "Uninstalling..."
     apt-get remove -y wireshark
+    apt-get remove -y wmctrl
 
 }
 

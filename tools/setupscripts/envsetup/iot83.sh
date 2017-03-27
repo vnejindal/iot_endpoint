@@ -16,7 +16,7 @@ popd () {
 
 usage()
 {
-    echo "Usage: $0 [params] status|<install release.tar.gz>|cutover|revert"
+    echo "Usage: $0 [params] status|<install release.tar.gz>|cutover|revert|start"
     #echo "params can be one of following:"
     #echo "    --version | -v     : Print out Software version and exit"
     echo "    --help | -h        : Print out this help message"
@@ -118,6 +118,16 @@ validate_setup()
    fi
 }
 
+install_package()
+{
+    cd $mod_name
+    echo "-----------------------------------------"
+    echo "Installing $mod_name package"
+    ./install.sh install
+    echo "$mod_name package installed successfully."
+    echo "-----------------------------------------"
+    cd -
+}
 ## Will unarchive each of individual modules and 
 # install them 
 #
@@ -139,11 +149,34 @@ install_modules()
         sha512sum -c $sha_file
         if [ $? -eq 0 ]; then 
              echo "sha match successful"
-             tar -zxvf $mod_file 
+             tar -zxvf $mod_file
+             install_package
         else
              echo "invalid module: sha does not match"
              exit 1
         fi
+    done
+}
+
+## Start each modules listed in modules
+start_modules()
+{
+    set +x
+    cd $REL_DIR/$CUR_DIR
+    for modinfo in `cat modules`
+    do
+        mod_name=`echo $modinfo | cut -f1 -d':'`
+        mod_rel=`echo $modinfo | cut -f2 -d':'`
+
+
+        cd $mod_name
+        echo "-----------------------------------------"
+        echo "Starting $mod_name module"
+        echo "-----------------------------------------"
+        ./install.sh start
+        echo "$mod_name package started successfully."
+        echo "-----------------------------------------"
+        cd -
     done
 }
 
@@ -220,6 +253,9 @@ show_status
 install)
 RELEASE_FILE=$2
 install_release
+;;
+start)
+start_modules
 ;;
 cutover)
 cutover_release

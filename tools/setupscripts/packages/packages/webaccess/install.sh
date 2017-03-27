@@ -140,7 +140,7 @@ else
    apt-get install -y nodejs 
    echo 'nodejs installed'
 fi
-echo "Node Js: `node-v`"
+echo "Node Js: `node -v`"
 echo "NPM : `npm -v`"
 echo 'installing required nodejs modules'
 node_mods='tty.js bluebird'

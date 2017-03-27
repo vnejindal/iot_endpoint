@@ -32,7 +32,7 @@ MAVER=`cat $REL_FILE | grep $MAJOR | cut -f2 -d"$DELIM"`
 MIVER=`cat $REL_FILE | grep $MINOR | cut -f2 -d"$DELIM"`
 BUVER=`cat $REL_FILE | grep $BUILD | cut -f2 -d"$DELIM"`
 echo "version - $MAVER.$MIVER.$BUVER"
-echo "Build Date - `date`" >> $REL_FILE
+echo "version: $MAVER.$MIVER.$BUVER; Build Date - `date`" >> $REL_FILE
 }
 
 create_pkg()
