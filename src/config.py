@@ -89,7 +89,7 @@ def get_messaging_protocol():
     return platform_config['messaging']['protocol']
 
 def get_subscribe_topic():
-    return platform_config['messaging']['mqtt']['subtopic']
+    return platform_config['messaging']['mqtt']['subtopic']['request']
 
 def get_platform_role():
     return platform_config['role']

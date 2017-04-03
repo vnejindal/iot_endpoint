@@ -26,7 +26,7 @@ def publish_temperature_data(dtype, did, client, device_config = None):
     Reads the device type temperature
     """
     if device_config is None: 
-        device_config = device.get_device_profile(type, id)
+        device_config = device.get_device_profile(dtype, did)
 
     fs_path = device_config['sensor']['fs_path'] + '/'
     file1 = fs_path + device_config['sensor']['files'][0]['data_file'] 
@@ -34,8 +34,8 @@ def publish_temperature_data(dtype, did, client, device_config = None):
     
     sleep_time = 1
     while True:
-        if device.is_device_delete(dtype, did):
-            return 
+        #vne::tbd:: if device.is_device_delete(dtype, did):
+        #    return 
         if device.is_device_enabled(dtype, did):
             sleep_time = device_config['frequency'] 
             
@@ -61,7 +61,8 @@ def publish_temperature_data(dtype, did, client, device_config = None):
                 in_temp = 9.0/5.0 * float(tscale)*float(traw) + 32
                 
             temp_data = {}
-            temp_data['timestamp'] = time.asctime(time.localtime(time.time()))
+            #temp_data['timestamp'] = time.asctime(time.localtime(time.time()))
+            temp_data['timestamp'] = time.strftime("%Y-%m-%dT%H:%M:%S",time.localtime(time.time()))
             temp_data['temperature'] = str(in_temp)
             temp_data['unit'] = unit
             print 'publishing data: ', temp_data
@@ -73,6 +74,7 @@ def publish_temperature_data(dtype, did, client, device_config = None):
             #print 'data_string : ', data_string 
         
             topic = device.get_device_topic(dtype, did)
+            print 'publish topic:', topic
             #publish the data
             infot = client.publish(topic, data_string, qos=0)
         time.sleep(sleep_time)

@@ -60,14 +60,15 @@ def initialize():
     Entry point function for device initialization 
     """
     generate_device_sm()
-    log_device_module()
     global devices_dict
     devices_dict['temperature'] = {}
+    log_device_module()
     
 
 def get_device_topic(dtype, did):
-    return '/'.join(['publish', devices_dict[dtype][did]['topic']])
-    #return '/'.join([common.get_node_id(), 'device', type, id])
+    return devices_dict[dtype][did]['topic'].replace("control","publish")
+    #vne:: add publish topic to dictionary as well
+    #return '/'.join(['publish', devices_dict[dtype][did]['topic']])
 
 
 def device_add(device_data):
