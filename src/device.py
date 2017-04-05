@@ -14,6 +14,7 @@ devices_dict = {}
 device_action_sm = {}
 device_fn_sm = {}
 device_actions = []
+device_types = []
 device_status = None
 device_states = None
 resp_codes = None
@@ -28,6 +29,8 @@ def generate_device_sm():
     device_status = config.get_system_device_status()
     global device_states
     device_states = config.get_system_device_states()
+    global device_types
+    device_types = config.get_system_device_types()
     global resp_codes
     resp_codes = config.get_system_resp_codes()
     """
@@ -61,7 +64,9 @@ def initialize():
     """
     generate_device_sm()
     global devices_dict
-    devices_dict['temperature'] = {}
+    for dtype in device_types:
+        devices_dict[dtype] = {}
+    
     log_device_module()
     
 
@@ -83,7 +88,7 @@ def device_add(device_data):
     """
     retval = 0
     #vne::tbd device_template = {}
-    device_template = templates.get_temperature_template()
+    device_template = templates.get_temperature_template(device_data['mode'] == 'simulation')
     device_template.update(device_data)
     
     device_id = device_data['id']
@@ -101,7 +106,7 @@ def device_add(device_data):
     device_template['device_file'] = device_file
     common.create_json_file(device_template, device_file)
            
-    publish_thread = Thread(target=device_publish_thread, args=(device_type, device_id,))
+    publish_thread = Thread(target=device_publish_thread, args=(device_type, device_id))
     publish_thread.start()
     print 'device added successfully', device_type, device_id
     return retval
@@ -242,6 +247,7 @@ def process_device_msg(msg_topic, msg_payload):
     if device_id in devices_dict[device_type]:
         allowed_actions = device_action_sm[get_device_status(device_type, device_id)]
     else:
+        print 'new add device request'
         allowed_actions = device_action_sm[device_status[0]]
     if action.lower() in allowed_actions:
         parsed_json['id'] = device_id

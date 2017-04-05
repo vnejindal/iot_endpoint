@@ -1,16 +1,12 @@
 """
 contains functionality for MQTT -- entry level for other stuff
 """
-import os
-import json
-import sys
 
 import paho.mqtt.client as mqtt
 
 import config
 import endpoint
 import subscribe
-import dpublish
 import device 
 import common
 
@@ -60,7 +56,7 @@ def on_publish(client, userdata, mid):
     print("mid: "+str(mid))
     pass
 
-def device_client_start(type, id):
+def device_client_start():
     """
     Connects with MQTT broker
     """

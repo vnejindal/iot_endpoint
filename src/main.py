@@ -16,9 +16,7 @@ def main():
     print "Starting read_n_dump..."
     common.initialize()
     
-    device_id= str(10)
-    device_type='temperature'
-    epmqtt.device_client_start(device_type, device_id)
+    epmqtt.device_client_start()
     sleep(10)  ##vne::tbd
 
     

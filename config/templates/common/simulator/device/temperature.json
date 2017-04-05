@@ -1,0 +1,28 @@
+{
+   "_comment":"Template file for temperature sensor simulation. It uses web APIs to get data",
+   "sensor":
+        {
+            "type":"temperature",
+            "interface":"web",
+            "web":
+			 {
+			        "url":"http://api.openweathermap.org/data/2.5/weather",
+    				"apikey":"be19d8c79a7f645deb802032834b0776",
+    				"location_zip":"94016",
+    				"country_code":"us"			    
+         	 }
+         },
+    "default_unit":"kelvin",
+    "unit":"celcius",
+    "state":"disabled",
+    "status":"none",
+    "frequency":10,
+    "trigger":
+    	{
+    		"state":"off",
+    		"high_value":78,
+    		"low_value":23,
+    		"unit":"celcius",
+    		"trigger_action":"alarm"
+        }
+}

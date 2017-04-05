@@ -1,0 +1,28 @@
+{
+   "_comment":"Scenario File for temperature device type",
+   "broker_ip":"52.38.175.21",
+   "broker_port":1883,
+   "gateway_id":"52.38.175.21",
+   "endpoint_id":"172.31.13.178",
+   "device_id":112,
+   "device_type":"temperature",
+   "protocol":"mqtt",
+   "request_id_start":50,
+   "actions": 
+   [    
+   	  {
+   	  	"wait":5,
+   	  	"_comment":"Add the device",
+   	    "action":"add",
+   	    "mode":"simulation"	    
+   	  },
+   	  {
+   	    "wait":15,
+   	    "_comment":"Enable the device",
+   	  	"action":"set",
+   	  	"state":"enabled",
+   	  	"frequency": 5,
+   	  	"mode":"simulation"   	    
+   	  }
+   ]
+}
