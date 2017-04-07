@@ -19,6 +19,9 @@
    		"barometer",
    		"accelerometer"   		
    		],
+   	"simulator_sensors":[
+   		"temperature"
+   		],
     "board_types": {
    		"udo": 
    			[ 

@@ -1,16 +1,12 @@
 """
 contains functionality for MQTT -- entry level for other stuff
 """
-import os
-import json
-import sys
 
 import paho.mqtt.client as mqtt
 
 import config
 import endpoint
 import subscribe
-import dpublish
 import device 
 import common
 
@@ -60,7 +56,7 @@ def on_publish(client, userdata, mid):
     print("mid: "+str(mid))
     pass
 
-def device_client_start(type, id):
+def device_client_start():
     """
     Connects with MQTT broker
     """
@@ -136,6 +132,8 @@ def initialize():
     mqtt_profile['sub'] = {}
     
     print 'vne:: role is ', role
+    print 'vvne:: ', config.get_platform_node_id(), config.get_platform_gw_id(), endpoint.get_subscribe_topic()
+
     if common.equals_ignore_case(role, 'endpoint'):
         print 'setting up endpint topics '
         mqtt_profile['pub']['gw_topic'] = '/'.join([config.get_platform_gw_id(), 
@@ -145,4 +143,3 @@ def initialize():
                                                  endpoint.get_subscribe_topic(), '#'])
     
     log_mqtt_profile()
-    

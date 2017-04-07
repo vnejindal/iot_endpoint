@@ -1,0 +1,7 @@
+{
+    "_comment": "Configuration file for subscribe_client.py",
+    "broker_ip": "52.38.175.21",
+    "broker_port":1883,
+    "subsribe_topic": "52_38_175_21/192_168_1_49/publish/device/temperature/111",
+    "output_file":"temperature.txt"
+}

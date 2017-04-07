@@ -2,7 +2,6 @@
 """
 This file will read json config information 
 """
-import os
 import json
 
 import common
@@ -21,6 +20,9 @@ def get_system_config():
 
 def get_system_device_actions():
     return system_config['device_actions']
+
+def get_system_device_types():
+    return system_config['sensor_types']
 
 def get_system_device_status():
     return system_config['device_status']
@@ -89,7 +91,7 @@ def get_messaging_protocol():
     return platform_config['messaging']['protocol']
 
 def get_subscribe_topic():
-    return platform_config['messaging']['mqtt']['subtopic']
+    return platform_config['messaging']['mqtt']['subtopic']['request']
 
 def get_platform_role():
     return platform_config['role']
