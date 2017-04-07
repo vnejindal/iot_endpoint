@@ -31,9 +31,11 @@ if [ ! -f $tty_configjson ]; then
 fi 
 
 OS=`cat $CONFIG_FILE | grep 'os' | cut -f2 -d"$DELIM"`
-os_ver=`uname -a | awk {'print $2'}`
+#os_ver=`uname -a | awk {'print $2'}`
+os_ver=`lsb_release -a | grep Distributor | awk {'print $3'}`
+
 if [ $os_ver != $OS ] ; then
-  echo 'OS version: $os_ver not supported. Exiting.'
+  echo "OS version: $os_ver not supported. Exiting."
   exit 1
 fi 
 
@@ -43,6 +45,55 @@ if [ `whoami` != 'root' ]; then
 fi 
 
 }
+############ MULTIPLE OS SUPPORT FROM CONFIG ##################
+## below code is working with pktcapture package ##############
+### here TBD: replace it with above function ##################
+<<'TBD'
+env_validate()
+{
+set -x
+    DELIM=":"
+    OS_STR_DELIM=","
+    OS_MATCHED="False"
+
+    if [ ! -f $CONFIG_FILE ]; then
+        echo ' $CONFIG_FILE does not exist. Incomplete installation. Exiting'
+        exit 1
+    fi 
+    
+    if [ ! -f $tty_configjson ]; then 
+        echo "$tty_configjson does not exist. Incomplete installation. Exiting"
+        exit 1
+    fi 
+
+    SUPPORTED_OS=`cat $CONFIG_FILE | grep '^os' | cut -f2 -d"$DELIM"`
+    target_os=`lsb_release -a | grep Distributor | awk {'print $3'}`
+    echo "Supported os are:"
+    
+    IFS=$OS_STR_DELIM
+    for OS in $SUPPORTED_OS
+    do
+        echo "$OS"
+        if [ $target_os = $OS ]; then
+            OS_MATCHED="TRUE"
+            break;
+        fi
+    done
+
+    if [ $OS_MATCHED = 'TRUE' ]; then
+        echo "Mached OS is $OS"
+    else
+        echo "Target OS version: $target_os not supported. Exiting."
+        exit 1
+    fi
+
+    if [ `whoami` != 'root' ]; then 
+        echo 'User is not root. Exiting'
+        exit 1
+    fi 
+}
+TBD
+############ MULTIPLE OS SUPPORT FROM CONFIG END ###############
 sys_config()
 {
 cur_time=`date`
@@ -68,8 +119,16 @@ tty_configjson=ttyconfig.json
 ip_token='ip_address'
 port_token='port'
 
-ipaddr=`cat $config_file | grep $ip_token | awk {'print $3'}`
-port=`cat $config_file | grep $port_token | awk {'print $3'}`
+echo "envset: $envset"
+if [[ ($envset) && ($envset = 'true') ]]; then
+  echo "env ip: $envip and port: $envport set successfully."
+  ipaddr=$envip
+  port=$envport
+else
+  echo "Taking default ip and port from $config_file"
+  ipaddr=`cat $config_file | grep $ip_token | awk {'print $3'}`
+  port=`cat $config_file | grep $port_token | awk {'print $3'}`
+fi
 ttyport=`expr $port + 1`
 novncport=`expr $ttyport + 1`
 vncport=`expr $novncport + 1`
@@ -132,8 +191,9 @@ echo $ipaddr:$port:$ttyport:$novncport > $dfile
 }
 install_nodejs_modules()
 {
+set -x
 pkg_state=`dpkg --get-selections | grep nodejs | awk {'print $2'}`
-if [ $pkg_state = 'install' ]; then 
+if [[ ($pkg_state) && ($pkg_state = 'install') ]]; then 
   echo 'nodejs already installed'
 else
    curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
@@ -168,10 +228,10 @@ dump_config_bkup
 install_x11vnc()
 {
 pkg_state=`dpkg --get-selections | grep x11vnc | awk {'print $2'} | head -1`
-if [ $pkg_state = 'install' ]; then 
+if [[ ($pkg_state) && ($pkg_state = 'install') ]]; then 
   echo 'x11vnc already installed'
 else
-  apt-get install x11vnc
+  apt-get install -y x11vnc
 fi 
 echo "x11vnc version: `x11vnc --version`" 
 }
@@ -179,8 +239,10 @@ echo "x11vnc version: `x11vnc --version`"
 install_novnc()
 {
 if [ -d "noVNC" ]; then
-echo "noVNC already present"
+echo "noVNC already present at:"
+echo "$PWD"
 else
+echo "noVNC is installed at: $PWD"
 git clone git://github.com/kanaka/noVNC
 fi
 }
@@ -210,6 +272,7 @@ echo "starting x11vnc server"
 start_novnc_server()
 {
 echo "starting novnc"
+echo $PWD
 ./noVNC/utils/launch.sh --vnc localhost:$vncport --listen $novncport &
 }
 stop_services()
@@ -228,9 +291,6 @@ start_services()
   start_nodejs_server
 }
 
-
-
-######################################################
 usage()
 {
     echo "Usage: $0 [params] install|uninstall|start|stop"
@@ -284,6 +344,7 @@ done
 
 install()
 {
+set -x
    echo "Installing..."
    validate_network_params
    install_nodejs_modules

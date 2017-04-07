@@ -38,7 +38,7 @@ echo "version: $MAVER.$MIVER.$BUVER; Build Date - `date`" >> $REL_FILE
 create_pkg()
 {
   set -x
-  if [ ! -d $PKG_DIR]; then
+  if [ ! -d $PKG_DIR ]; then
      echo "$PKG_DIR does not exist"
      return 1
   fi
