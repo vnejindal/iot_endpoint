@@ -87,21 +87,27 @@ def device_add(device_data):
     Add device to existing list 
     """
     retval = 0
-    #vne::tbd device_template = {}
-    device_template = templates.get_temperature_template(device_data['mode'] == 'simulation')
-    device_template.update(device_data)
-    
     device_id = device_data['id']
-    fname = 'device_' + device_id + common.config_ext
-     
     device_type = device_data['type']
     
+    if 'mode' in device_data and device_data['mode'] == 'simulation':
+        device_data['sim_mode'] = True
+    else:
+        device_data['sim_mode'] = False
+    
+    device_template = templates.get_temperature_template(device_data['sim_mode'])
+    device_template.update(device_data)
+    # Set global device Id
+    device_template['gid'] = config.get_device_global_id(device_type, device_id)
+    device_template['data_topic'] = config.get_publish_id(device_type, 'data', device_id)
+  
     #device_type['status'] = 'registered'
 
     global devices_dict
     devices_dict[device_type][device_id] = device_template
     set_device_status(device_type, device_id, device_status[1])
     
+    fname = 'device_' + device_id + common.config_ext
     device_file = common.get_platform_delim().join([common.get_device_config_dir(), device_type, fname])
     device_template['device_file'] = device_file
     common.create_json_file(device_template, device_file)
@@ -225,6 +231,15 @@ def is_device_enabled(dtype, did):
 def get_device_profile(dtype, did):
     return devices_dict[dtype][did]
      
+def decode_mqtt_topic(topic):
+    """
+    decodes mqtt topic and returns a tuple of device_type and device id
+    """
+    msgtopic = topic.split("/")
+    dtype = msgtopic[1]
+    did = msgtopic[-1]
+    return (dtype, did)
+    
 def process_device_msg(msg_topic, msg_payload):
     """
     processes control message recevied for device 
@@ -233,11 +248,8 @@ def process_device_msg(msg_topic, msg_payload):
     """
     retval = 0
     resp_status = resp_codes[0]
-    msgtopic = msg_topic.split("/")
-    device_type, device_id = msgtopic[-2:]
-    #print("Message received: "+ msg_payload)
+    (device_type, device_id) = decode_mqtt_topic(msg_topic)
     parsed_json = common.decode_mqtt_payload(msg_payload)
-    #print 'vne:: ', parsed_json
     """
     check if this device exists or not
     decode the json payload to get action 

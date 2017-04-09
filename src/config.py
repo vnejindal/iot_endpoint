@@ -7,13 +7,51 @@ import json
 import common
 import templates 
 import epmqtt
-
+from common import get_node_id
 
 """
 Configuration Global Variables 
 """
 global system_config 
 global platform_config
+
+#############################################################
+def get_control_topics():
+    """
+    returns a list of control topic for subscription 
+    control/temperature/<global_ep_id>/#
+
+    """
+    p_delim = get_platorm_delim()
+    return [p_delim.join(['control', 'temperature', get_platform_gw_id(), get_platform_node_id(), '#' ])]
+
+def get_device_global_id(dtype, did):
+    """
+    dtype (string): device type
+    did (string): device Id
+    returns device global Id
+    """
+    p_delim = get_platorm_delim()
+    return p_delim.join([dtype, get_platform_gw_id(), get_platform_node_id(), did])
+
+def get_publish_id(dtype, ptype, did):
+    """
+    dtype (string): device type
+    ptype (string): publish data type
+    did (string): device Id
+    returns publish topic types
+    
+    Reading Publish Topic: sensor/data/temperature/<global_device_id>
+    Alarms Publish Topic: sensor/alarms/temperature/<global_device_id>
+
+    """
+    p_delim = get_platorm_delim()
+    if dtype is 'data' or dtype is 'alarms':
+        return p_delim.join(['sensor', dtype, get_device_global_id(dtype, did) ])
+    else 
+        return None
+
+##############################################################
 
 def get_system_config():
     return system_config
