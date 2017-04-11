@@ -29,8 +29,8 @@ if test $# -lt 1; then
 fi
 
 #### GLOBAL VARIABLES ####
-INSTALL_DIR=/tmp
-BASE_DIR=$INSTALL_DIR/iot
+INSTALL_DIR=/opt
+BASE_DIR=$INSTALL_DIR/iot83
 ## Configuration Files 
 CONFIG_DIR=$BASE_DIR/config
 ## Release directory 
