@@ -5,7 +5,6 @@ This file contains functionality of publishing device updates to MQTT broker
 import os
 import time
 import json 
-import sys
 import urllib2
  
 #sys.path.append('../pylib/paho.mqtt.python/src/paho/mqtt')
@@ -36,30 +35,19 @@ def publish_temperature_data(dtype, did, client, device_config = None):
         if device.is_device_enabled(dtype, did):
             sleep_time = device_config['frequency'] 
             
-            
-            """
-            unit = device_config['unit']
-            def_unit = device_config['default_unit']
-            
-            if unit == def_unit: 
-                in_temp = float(tscale) * float(traw)
-            else:
-                in_temp = 9.0/5.0 * float(tscale)*float(traw) + 32
-            """
             (temp_reading, user_data) = _get_temperature_reading(device_config)
             
             temp_data = {}
             temp_data['id'] = device_config['gid']
-            #temp_data['timestamp'] = time.asctime(time.localtime(time.time()))
-            temp_data['timestamp'] = time.strftime("%Y-%m-%dT%H:%M:%S",time.localtime(time.time()))
             temp_data['temperature'] = str(temp_reading)
             temp_data['unit'] = device_config['unit']
             temp_data.update(user_data)
+            #temp_data['timestamp'] = time.asctime(time.localtime(time.time()))
+            temp_data['timestamp'] = time.strftime("%Y-%m-%dT%H:%M:%S",time.localtime(float(user_data['time'])))
+            temp_data.pop('time', None)
+            
             print 'publishing data: ', temp_data
-            """
-            temp_data['in_temp_scale'] = tscale.strip()
-            temp_data['in_temp_raw'] = traw.strip()
-            """
+
             data_string = json.dumps(temp_data)
             topic = device_config['data_topic']
             print 'publish topic:', topic
@@ -110,6 +98,7 @@ def _get_udo_temperature_sensor(device_config):
     infile2.close()
     
     user_data = {}
+    user_data['time'] = time.time()
     
     return (float(tscale) * float(traw), user_data) 
     
