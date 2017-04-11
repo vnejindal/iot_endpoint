@@ -5,7 +5,6 @@ This file contains functionality of publishing device updates to MQTT broker
 import os
 import time
 import json 
-import sys
 import urllib2
  
 #sys.path.append('../pylib/paho.mqtt.python/src/paho/mqtt')
@@ -36,34 +35,22 @@ def publish_temperature_data(dtype, did, client, device_config = None):
         if device.is_device_enabled(dtype, did):
             sleep_time = device_config['frequency'] 
             
-            
-            """
-            unit = device_config['unit']
-            def_unit = device_config['default_unit']
-            
-            if unit == def_unit: 
-                in_temp = float(tscale) * float(traw)
-            else:
-                in_temp = 9.0/5.0 * float(tscale)*float(traw) + 32
-            """
-            topic = device.get_device_topic(dtype, did)
-            print 'publish topic:', topic
+            (temp_reading, user_data) = _get_temperature_reading(device_config)
             
             temp_data = {}
-            #temp_data['timestamp'] = time.asctime(time.localtime(time.time()))
-            temp_data['topic'] = topic
-            temp_data['timestamp'] = time.strftime("%Y-%m-%dT%H:%M:%S",time.localtime(time.time()))
-            temp_data['temperature'] = str(_get_temperature_reading(device_config))
+            temp_data['id'] = device_config['gid']
+            temp_data['temperature'] = str(temp_reading)
             temp_data['unit'] = device_config['unit']
+            temp_data.update(user_data)
+            #temp_data['timestamp'] = time.asctime(time.localtime(time.time()))
+            temp_data['timestamp'] = time.strftime("%Y-%m-%dT%H:%M:%S",time.localtime(float(user_data['time'])))
+            temp_data.pop('time', None)
+            
             print 'publishing data: ', temp_data
-            """
-            temp_data['in_temp_scale'] = tscale.strip()
-            temp_data['in_temp_raw'] = traw.strip()
-            """
+
             data_string = json.dumps(temp_data)
-            #print 'data_string : ', data_string 
-        
-            #publish the data
+            topic = device_config['data_topic']
+            print 'publish topic:', topic
             client.publish(topic, data_string, qos=0)
         time.sleep(sleep_time)
         #print 'sleeping...', sleep_time
@@ -74,17 +61,22 @@ def _get_temperature_reading(device_config):
     
     """
     #vne::tbd:: get mode value from a common place to adapt to future changes
-    if device_config['mode'] == 'simulation':
-        temp_reading = _get_sim_temperature(device_config)
+    if device_config['sim_mode'] is True:
+        (temp_reading, user_data) = _get_sim_temperature(device_config)
     else:
-        temp_reading = _get_udo_temperature_sensor(device_config)
+        (temp_reading, user_data) = _get_udo_temperature_sensor(device_config)
+
+    #Temperature Unit conversion         
+    final_reading = dtemperature.convert_unit(temp_reading, device_config['default_unit'], device_config['unit'])
     
-    return dtemperature.convert_unit(temp_reading, device_config['default_unit'], device_config['unit'])
+    return (final_reading, user_data)
     
 def _get_udo_temperature_sensor(device_config):
     """
     Gets temperature sensor reading from UDOO Neo board sensor 
     tbd::vne:: introduce generality here.
+    
+    returns a tuple: temperature and user_data dict
     """
     dtype = device_config['type']
     did = device_config['id']
@@ -105,11 +97,15 @@ def _get_udo_temperature_sensor(device_config):
     infile1.close()
     infile2.close()
     
-    return float(tscale) * float(traw) 
+    user_data = {}
+    user_data['time'] = time.time()
+    
+    return (float(tscale) * float(traw), user_data) 
     
 def _get_sim_temperature(device_config):
     """
     Reads temperature reading from web
+    returns a tuple: temperature and user_data dict
     """
     web_config = device_config['sensor']['web']
     url = web_config['url'] + \
@@ -124,12 +120,15 @@ def _get_sim_temperature(device_config):
     json_string = url_data.read()
     parsed_json = json.loads(json_string)
     url_data.close()
+    
+    user_data = {}
+    user_data['zip'] = web_config['location_zip']
+    user_data['country_code'] = web_config['country_code']
+    user_data['time'] = parsed_json['dt']
 
-    return parsed_json['main']['temp']
+    return (parsed_json['main']['temp'], user_data)
     
   
-
-    
 def read_device_data(dtype, did, client = None):
     """Reads and publishes data 
     """

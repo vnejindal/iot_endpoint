@@ -1,7 +1,6 @@
 """
 Functions related to temperature read_sensor
 """
-from array import array
 
 ####### Unit Conversion Functions #########
 

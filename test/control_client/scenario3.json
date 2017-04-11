@@ -13,16 +13,14 @@
    	  {
    	  	"wait":5,
    	  	"_comment":"Add the device",
-   	    "action":"add",
-   	    "mode":"real"    
+   	    "action":"add"    
    	  },
    	  {
    	    "wait":15,
    	    "_comment":"Enable the device",
    	  	"action":"set",
    	  	"state":"enabled",
-   	  	"frequency": 5,
-   	    "mode":"real"
+   	  	"frequency": 5
    	  }
    ]
 }

@@ -58,7 +58,7 @@ def on_message(client, userdata, msg):
     print("vne:: "+msg.topic+" "+str(msg.payload))
     payload_json = decode_mqtt_payload(msg.payload)
     
-    dump_str = ','.join([payload_json['timestamp'], payload_json['temperature'], payload_json['unit']])    
+    dump_str = ','.join([payload_json['id'], payload_json['timestamp'], payload_json['temperature'], payload_json['unit']])    
     file_json['ofile_fd'].write( dump_str + "\n")
     file_json['ofile_fd'].flush()
     

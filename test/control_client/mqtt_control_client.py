@@ -123,6 +123,15 @@ def process_next_action(action):
     if scenario['endpoint_id'] != '':
         ep_id = generate_node_id(scenario['endpoint_id'])
     
+    scenario['topic'] = '/'.join(['control',
+                                  scenario['device_type'],
+                                  gw_id, 
+                                  ep_id, 
+                                  str(scenario['device_id'])
+                                  ]
+                                 )
+    
+    """
     scenario['topic'] = '/'.join([gw_id, 
                                   ep_id, 
                                   'control',
@@ -131,8 +140,9 @@ def process_next_action(action):
                                    str(scenario['device_id'])]
                                  )
     
-    request_common['topic'] = scenario['topic']
     
+    """
+    request_common['topic'] = scenario['topic']
     request = {}
     request.update(request_common)
     request.update(action)
@@ -145,4 +155,4 @@ def process_next_action(action):
     scenario['response']['wait'] = 1
     subscribe_topic(scenario['response']['topic'])
         
-start_scenario('scenario2.json')
+start_scenario('scenario4.json')
