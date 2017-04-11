@@ -105,11 +105,12 @@ setup()
   cp -rf * $ENV_DIR
   echo "install_path:$INSTALL_DIR" > $ENV_DIR/.config
   echo "date:`date`" >> $ENV_DIR/.config
+  mv $ENV_DIR/env.config $CONFIG_DIR
 }
 remove()
 {
     echo "cleaning up the environment"
-    echo "Not implemented yet.."
+    ./iot83.sh stop
     \rm -rf $BASE_DIR
 }
 COMMAND=$1

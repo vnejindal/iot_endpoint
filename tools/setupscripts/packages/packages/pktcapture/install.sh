@@ -28,18 +28,36 @@ WIRESHARK_VER='0.0.0'
 {
 env_validate()
 {
-DELIM=":"
-if [ ! -f $CONFIG_FILE ]; then
-  echo ' $CONFIG_FILE does not exist. Incomplete installation. Exiting'
-  exit 1
-fi 
-OS=`cat $CONFIG_FILE | grep 'os' | cut -f2 -d"$DELIM"`
-os_ver=`uname -a | awk {'print $2'}`
-if [ $os_ver != $OS ] ; then
-  echo 'OS version: $os_ver not supported. Exiting.'
-  exit 1
-fi 
+    DELIM=":"
+    OS_STR_DELIM=","
+    OS_MATCHED="False"
 
+    if [ ! -f $CONFIG_FILE ]; then
+        echo ' $CONFIG_FILE does not exist. Incomplete installation. Exiting'
+        exit 1
+    fi
+
+    USER=`users | awk {'print $1'}`
+    SUPPORTED_OS=`cat $CONFIG_FILE | grep '^os' | cut -f2 -d"$DELIM"`
+    target_os=`lsb_release -a | grep Distributor | awk {'print $3'}`
+    
+    echo "supported os are:"
+    IFS=$OS_STR_DELIM
+    for OS in $SUPPORTED_OS
+    do
+        echo "$OS"
+        if [ $target_os = $OS ]; then
+            OS_MATCHED="TRUE"
+            break;
+        fi
+    done
+
+    if [ $OS_MATCHED = "TRUE" ]; then
+        echo "Mached OS is $OS"
+    else
+        echo "Target OS version: $target_os not supported. Exiting."
+        exit 1
+    fi
 }
 sys_config()
 {
@@ -101,7 +119,7 @@ done
 validate_wireshark()
 {
 pkg_state=`dpkg --get-selections | grep -w wireshark | head -1| awk {'print $2'}`
-if [ $pkg_state = 'install' ]; then 
+if [[ ($pkg_state) && ($pkg_state = 'install') ]]; then 
   echo 'wireshark already installed'
   WIRESHARK_INSTALL=1
 else
@@ -152,7 +170,7 @@ rm -rf $TMP_DIR
 get_prerequisite_package()
 {
    pkg_state=`dpkg --get-selections | grep -w wmctrl | head -1| awk {'print $2'}`
-   if [ $pkg_state = 'install' ]; then 
+   if [[ ($pkg_state) && ($pkg_state = 'install') ]]; then 
       echo 'wmctrl is already installed'
    else
       echo 'Installing wmctrl'
@@ -172,11 +190,11 @@ wireshark --version
 install_dissectors
 }
 
-get_captureInterface_and_filter()
+get_Interface_and_filter()
 {
    DELIM=":"
-   CAP_IFACE=`cat $CONFIG_FILE | grep 'wsinf' | cut -f2 -d"$DELIM"`
-   CAP_FILTER=`cat $CONFIG_FILE | grep 'wsfilter' | cut -f2 -d"$DELIM"`
+   CAP_IFACE=`cat $CONFIG_FILE | grep -w "^wsinf" | cut -f2 -d"$DELIM"`
+   CAP_FILTER=`cat $CONFIG_FILE | grep -w "^wsfilter" | cut -f2 -d"$DELIM"`
 }
 
 start_wireshark()
@@ -185,9 +203,11 @@ start_wireshark()
   PCAP_FILE='/tmp/out.pcap'
   #enable dumpcap for non-root users
   sudo setcap 'CAP_NET_RAW+eip CAP_NET_ADMIN+eip' /usr/bin/dumpcap
-  get_captureInterface_and_filter
-  #TODO: add wshark as a new user here and run wireshark from that user
-  /bin/su - govind /bin/bash -c "wireshark -D;wireshark -kSl -i $CAP_IFACE -f $CAP_FILTER -w $PCAP_FILE&"
+
+  get_Interface_and_filter
+
+  #/bin/su - $USER /bin/bash -c "wireshark -D;wireshark -kSl -i $CAP_IFACE -f $CAP_FILTER -w $PCAP_FILE&"
+  /bin/su - $USER /bin/bash -c "wireshark -D;wireshark -kSl -i $CAP_IFACE -f $CAP_FILTER&"
 
   sleep 2
   winid=`xwininfo -name wireshark |grep "Window id" |awk {'print $4'}`
@@ -229,7 +249,7 @@ appstart()
 appstop()
 {
     echo "Stopping app..."
-    echo "Not implemented yet.."
+    kill -9 `ps -ef | grep wireshark | grep -v grep | awk {'print $2'}`
 }
 COMMAND=$1
 echo "Command is $COMMAND"

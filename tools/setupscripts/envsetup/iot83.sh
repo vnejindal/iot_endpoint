@@ -40,6 +40,8 @@ ENV_CONFIG=$BASE_DIR/envsetup/.config
 LOG_FILE=${PWD##*/}.log
 COMMAND_OPTS="$@"
 DRYRUN=0
+## Prerequisite Package directory
+PRE_REQUISITESOFT_DIR=$BASE_DIR/envsetup/preRequisiteSofts
 
 RELEASE_FILE=''
 RELEASE_NAME=''
@@ -118,11 +120,19 @@ validate_setup()
    fi
 }
 
+set_envIP()
+{
+   export envset="true"
+   export envip=`cat $CONFIG_DIR/env.config |grep ip_address| awk {'print $3'}`
+   export envport=`cat $CONFIG_DIR/env.config |grep port| awk {'print $3'}`
+}
+
 install_package()
 {
     cd $mod_name
     echo "-----------------------------------------"
     echo "Installing $mod_name package"
+    set_envIP
     ./install.sh install
     echo "$mod_name package installed successfully."
     echo "-----------------------------------------"
@@ -161,7 +171,7 @@ install_modules()
 ## Start each modules listed in modules
 start_modules()
 {
-    set +x
+    #set +x
     cd $REL_DIR/$CUR_DIR
     for modinfo in `cat modules`
     do
@@ -173,8 +183,32 @@ start_modules()
         echo "-----------------------------------------"
         echo "Starting $mod_name module"
         echo "-----------------------------------------"
+        set_envIP
         ./install.sh start
         echo "$mod_name package started successfully."
+        echo "-----------------------------------------"
+        cd -
+    done
+}
+
+## Stop each modules listed in modules for clean up the system
+stop_modules()
+{
+    set +x
+    cd $REL_DIR/$CUR_DIR
+    for modinfo in `cat modules`
+    do
+        mod_name=`echo $modinfo | cut -f1 -d':'`
+        mod_rel=`echo $modinfo | cut -f2 -d':'`
+
+
+        cd $mod_name
+        echo "-----------------------------------------"
+        echo "Stopping $mod_name module"
+        echo "-----------------------------------------"
+        set_envIP
+        ./install.sh stop
+        echo "$mod_name package stopped successfully."
         echo "-----------------------------------------"
         cd -
     done
@@ -241,7 +275,12 @@ cutover_release()
    echo "backup:$ACTIVE_REL" >> $CONFIG_FILE
    echo "cutover complete"
 }
-
+install_preRequisiteSofts()
+{
+    cd $PRE_REQUISITESOFT_DIR
+    ./swprerequisite.sh install
+    cd -
+}
 COMMAND=$1
 #echo "Command is $COMMAND"
 
@@ -251,11 +290,20 @@ status)
 show_status
 ;;
 install)
-RELEASE_FILE=$2
-install_release
+if [ $2 ]; then
+    install_preRequisiteSofts
+    RELEASE_FILE=$2
+    install_release
+else
+    echo "Please provide valid input <release>.tar.gz file to install"
+    usage
+fi
 ;;
 start)
 start_modules
+;;
+stop)
+stop_modules
 ;;
 cutover)
 cutover_release

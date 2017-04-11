@@ -1,0 +1,3 @@
+python : 2.7.6
+wireshark : 1.10.6
+wmctrl  : 1.07
