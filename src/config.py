@@ -7,7 +7,6 @@ import json
 import common
 import templates 
 import epmqtt
-from common import get_node_id
 
 """
 Configuration Global Variables 
@@ -46,9 +45,9 @@ def get_publish_id(dtype, ptype, did):
 
     """
     p_delim = get_platorm_delim()
-    if dtype is 'data' or dtype is 'alarms':
-        return p_delim.join(['sensor', dtype, get_device_global_id(dtype, did) ])
-    else 
+    if ptype is 'data' or ptype is 'alarms':
+        return p_delim.join(['sensor', get_device_global_id(dtype, did) ])
+    else:
         return None
 
 ##############################################################

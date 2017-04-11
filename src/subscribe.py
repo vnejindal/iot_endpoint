@@ -8,7 +8,7 @@ import paho.mqtt.client as mqtt
 
 
 def subscribe_mqtt_topics(client):
-    t_list = config.get_subscribe_topic()
+    t_list = config.get_control_topics()
     for topic in t_list: 
         print 'subscribing to ', topic
         client.subscribe(topic)
