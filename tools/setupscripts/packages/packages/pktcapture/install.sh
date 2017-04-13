@@ -206,14 +206,23 @@ start_wireshark()
 
   get_Interface_and_filter
 
+  set -x
   #/bin/su - $USER /bin/bash -c "wireshark -D;wireshark -kSl -i $CAP_IFACE -f $CAP_FILTER -w $PCAP_FILE&"
-  /bin/su - $USER /bin/bash -c "wireshark -D;wireshark -kSl -i $CAP_IFACE -f $CAP_FILTER&"
+  #/bin/su - $USER /bin/bash -c "wireshark -D;wireshark -kSl -i $CAP_IFACE -f $CAP_FILTER&"
+  /bin/su - $USER /bin/bash -c "wireshark -D;env DISPLAY=:0 XAUTHORITY=/home/$USER/.Xauthority wireshark -kSl -i $CAP_IFACE -f $CAP_FILTER&"
 
-  sleep 2
-  winid=`xwininfo -name wireshark |grep "Window id" |awk {'print $4'}`
-  wmctrl -i -a $winid fullscreen
-  #wireshark -D
-  #wireshark -kSl -i lo -w $PCAP_FILE
+  sleep 10
+  #METHOD:1
+  #winid=`xwininfo -name wireshark |grep "Window id" |awk {'print $4'}`
+  #wmctrl -i $winid -b add,fullscreen
+
+  #METHOD:2
+  #wmctrl -r wireshark -b add,fullscreen
+  env DISPLAY=:0 XAUTHORITY=/home/$USER/.Xauthority wmctrl -r "wireshark" -b add,fullscreen
+  set +x
+
+  #To remove fullscreen
+  #wmctrl -r wireshark -b remove,fullscreen
 }
 
 install()

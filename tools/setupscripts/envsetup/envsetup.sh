@@ -4,7 +4,7 @@
 # This script will setup the environment on hardware. 
 # It is needed only the first time 
 # Release Structure
-# install_dir/iot/release/
+# install_dir/iot83/release/
 #    |- .archive (d) 
 #    |- .config (f)
 #          |- active:
@@ -28,8 +28,8 @@ if test $# -lt 1; then
 fi
 
 #### GLOBAL VARIABLES ####
-INSTALL_DIR=/tmp
-BASE_DIR=$INSTALL_DIR/iot
+INSTALL_DIR=/opt
+BASE_DIR=$INSTALL_DIR/iot83
 CONFIG_DIR=$BASE_DIR/config
 REL_DIR=$BASE_DIR/release
 ENV_DIR=$BASE_DIR/envsetup

@@ -30,10 +30,10 @@ if [ ! -f $tty_configjson ]; then
   exit 1
 fi 
 
-OS=`cat $CONFIG_FILE | grep 'os' | cut -f2 -d"$DELIM"`
+OS=`cat $CONFIG_FILE | grep '^os' | cut -f2 -d"$DELIM"`
 #os_ver=`uname -a | awk {'print $2'}`
-os_ver=`lsb_release -a | grep Distributor | awk {'print $3'}`
-
+os_ver=`lsb_release -a | grep '^Distributor' | awk {'print $3'}`
+echo "Suported OS: $OS, Target OS: $os_ver"
 if [ $os_ver != $OS ] ; then
   echo "OS version: $os_ver not supported. Exiting."
   exit 1
@@ -51,7 +51,7 @@ fi
 <<'TBD'
 env_validate()
 {
-set -x
+#set -x
     DELIM=":"
     OS_STR_DELIM=","
     OS_MATCHED="False"
@@ -191,7 +191,7 @@ echo $ipaddr:$port:$ttyport:$novncport > $dfile
 }
 install_nodejs_modules()
 {
-set -x
+#set -x
 pkg_state=`dpkg --get-selections | grep nodejs | awk {'print $2'}`
 if [[ ($pkg_state) && ($pkg_state = 'install') ]]; then 
   echo 'nodejs already installed'
@@ -344,7 +344,7 @@ done
 
 install()
 {
-set -x
+#set -x
    echo "Installing..."
    validate_network_params
    install_nodejs_modules
