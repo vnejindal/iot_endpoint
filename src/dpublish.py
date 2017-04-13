@@ -35,7 +35,12 @@ def publish_temperature_data(dtype, did, client, device_config = None):
         if device.is_device_enabled(dtype, did):
             sleep_time = device_config['frequency'] 
             
-            (temp_reading, user_data) = _get_temperature_reading(device_config)
+            try:
+                (temp_reading, user_data) = _get_temperature_reading(device_config)
+            except:
+                print 'Exception in getting temperature data'
+                time.sleep(sleep_time)
+                continue
             
             temp_data = {}
             temp_data['id'] = device_config['gid']
@@ -124,8 +129,9 @@ def _get_sim_temperature(device_config):
     user_data = {}
     user_data['zip'] = web_config['location_zip']
     user_data['country_code'] = web_config['country_code']
-    user_data['time'] = parsed_json['dt']
-
+    #the API is not updating time with every invocation, so using local time instead
+    #user_data['time'] = parsed_json['dt']
+    user_data['time'] = time.time()
     return (parsed_json['main']['temp'], user_data)
     
   
